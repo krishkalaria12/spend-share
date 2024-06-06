@@ -5,3 +5,11 @@ export type Feedback = {
     createdAt: string;
     isLiked: boolean;
 };
+
+export interface Friend {
+    _id: string;
+    username: string;
+    email: string;
+    fullName: string;
+    avatar: string;
+}

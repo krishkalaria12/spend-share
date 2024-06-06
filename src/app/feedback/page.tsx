@@ -8,6 +8,7 @@ import { CreateFeedback } from '@/app/feedback/CreateFeedback';
 import { Feedback as FeedbackType } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@clerk/nextjs';
+import { ServerError } from '@/components/server-error';
 
 const FeedbackPage = () => {
   const [message, setMessage] = useState('');
@@ -99,6 +100,12 @@ const FeedbackPage = () => {
   const toggleDelete = (id: string) => {
     deleteFeedbackMutation.mutate(id);
   };
+
+  if (isError) {
+    return (
+      <ServerError />
+    )
+  }
 
   return (
     <div className="grid py-6 items-start gap-4 px-4 lg:items-center lg:px-0">
