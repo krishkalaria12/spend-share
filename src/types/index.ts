@@ -13,3 +13,27 @@ export interface Friend {
     fullName: string;
     avatar: string;
 }
+
+export interface Expense {
+    _id: string;
+    title: string;
+    description: string;
+    amount: number;
+    category: string;
+    createdAt: string;
+}
+
+export interface ExpenseComparison {
+    weekExpense: number;
+    monthExpense: number;
+    percentageComparison: {
+        week: number;
+        month: number;
+    };
+    overallExpenseAmount: number;
+}
+
+export interface ExpenseCategory {
+    category: string;
+    expenses: Expense[];
+}
