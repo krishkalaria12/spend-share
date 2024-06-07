@@ -1,13 +1,12 @@
 import { connect } from "@/lib/db";
 import { Group } from "@/models/group.models";
 import { Transaction } from "@/models/transaction.models";
-import User from "@/models/user.models";
 import { createError } from "@/utils/ApiError";
 import { createResponse } from "@/utils/ApiResponse";
 import { auth } from "@clerk/nextjs/server";
 import mongoose, { isValidObjectId } from "mongoose";
 
-export async function DELETE(request: Request) {
+export async function GET(request: Request) {
     await connect();
 
     try {
@@ -25,10 +24,10 @@ export async function DELETE(request: Request) {
         }
 
         const transactions = await Transaction.aggregate([
-            { 
-                $match: { 
-                    groupId: new mongoose.Types.ObjectId(groupId) 
-                } 
+            {
+                $match: {
+                    groupId: new mongoose.Types.ObjectId(groupId)
+                }
             },
             {
                 $lookup: {
@@ -39,7 +38,7 @@ export async function DELETE(request: Request) {
                     pipeline: [
                         {
                             $match: {
-                                debtor: userId
+                                debtor: new mongoose.Types.ObjectId(userId)
                             }
                         },
                         {
@@ -53,6 +52,9 @@ export async function DELETE(request: Request) {
                 }
             },
             {
+                $unwind: "$owes"
+            },
+            {
                 $lookup: {
                     from: "users",
                     localField: "owes.creditor",
@@ -61,31 +63,19 @@ export async function DELETE(request: Request) {
                 }
             },
             {
-                $project: {
-                    _id: 1,
-                    totalAmount: "$amount",
-                    amount: { $arrayElemAt: ["$owes.amount", 0] },
-                    paid: { $arrayElemAt: ["$owes.paid", 0] },
-                    creditor: {
-                        $arrayElemAt: ["$creditorInfo", 0]
-                    },
-                    description: 1,
-                    title: 1,
-                    category: 1,
-                    createdAt: 1,
-                }
+                $unwind: "$creditorInfo"
             },
             {
                 $project: {
                     _id: 1,
-                    totalAmount: 1,
-                    amount: 1,
-                    paid: 1,
+                    totalAmount: "$amount",
+                    amount: "$owes.amount",
+                    paid: "$owes.paid",
                     creditor: {
-                        fullname: "$creditor.fullname",
-                        email: "$creditor.email",
-                        username: "$creditor.username",
-                        avatar: "$creditor.avatar"
+                        fullName: "$creditorInfo.fullName",
+                        email: "$creditorInfo.email",
+                        username: "$creditorInfo.username",
+                        avatar: "$creditorInfo.avatar"
                     },
                     description: 1,
                     title: 1,
@@ -95,7 +85,7 @@ export async function DELETE(request: Request) {
             }
         ]);
 
-        if (!transactions) {
+        if (!transactions || transactions.length === 0) {
             return Response.json(
                 createError(
                     "No transactions found", 404, false

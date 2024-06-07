@@ -22,7 +22,7 @@ export async function GET(request: Request) {
         if (!isValidObjectId(groupId)) {
             return Response.json(createError("Invalid group ID", 400, false));
         }
-
+        
         if (!groupId) {
             return Response.json(createError("Invalid group ID", 400, false));
         }
@@ -46,11 +46,6 @@ export async function GET(request: Request) {
                     localField: "admin",
                     foreignField: "_id",
                     as: "admin" // Populate admin details
-                }
-            },
-            {
-                $addFields: {
-                    avatar: "$avatar.url" // Extract avatar URL from the group document
                 }
             },
             {
@@ -79,6 +74,12 @@ export async function GET(request: Request) {
                 $unwind: "$admin" // Unwind the admin field
             },
             {
+                $addFields: {
+                    totalMembers: { $size: "$members" }, // Calculate total number of members
+                    isAdmin: { $eq: ["$admin._id", new mongoose.Types.ObjectId(userId)] } // Check if the requesting user is the admin
+                }
+            },
+            {
                 $lookup: {
                     from: "users",
                     localField: "admin.friends",
@@ -88,49 +89,13 @@ export async function GET(request: Request) {
             },
             {
                 $addFields: {
-                    totalMembers: { $size: "$members" }, // Calculate total number of members
-                    isAdmin: { $eq: ["$admin._id", userId] } // Check if the requesting user is the admin
-                }
-            },
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "admin._id",
-                    foreignField: "_id",
-                    as: "adminDetails" // Populate admin details
-                }
-            },
-            {
-                $unwind: "$adminDetails" // Unwind the adminDetails field
-            },
-            {
-                $addFields: {
-                    friends: {
-                        $cond: {
-                            if: "$isAdmin", // If the user is an admin
-                            then: "$adminFriends",
-                            else: [] // Otherwise, empty array
-                        }
-                    }
-                }
-            },
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "admin.friends",
-                    foreignField: "_id",
-                    as: "allAdminFriends" // Fetch all friends of the admin
-                }
-            },
-            {
-                $addFields: {
                     friendsNotInGroup: {
                         $filter: {
-                            input: "$allAdminFriends",
+                            input: "$adminFriends",
                             as: "friend",
                             cond: {
                                 $not: {
-                                    $in: ["$friend._id", "$members._id"] // Filter out friends who are already members of the group
+                                    $in: ["$$friend._id", "$members._id"] // Filter out friends who are already members of the group
                                 }
                             }
                         }
@@ -141,9 +106,9 @@ export async function GET(request: Request) {
                 $addFields: {
                     friends: {
                         $cond: {
-                            if: { $eq: [{ $size: "$friendsNotInGroup" }, 0] }, // Check if friendsNotInGroup is empty
-                            then: [],
-                            else: "$friendsNotInGroup" // Otherwise, include friendsNotInGroup in the friends array
+                            if: "$isAdmin", // If the user is an admin
+                            then: "$friendsNotInGroup",
+                            else: [] // Otherwise, empty array
                         }
                     }
                 }
@@ -159,9 +124,7 @@ export async function GET(request: Request) {
                         email: 1,
                         fullName: 1,
                         isAdmin: 1,
-                        avatar: {
-                            url: 1
-                        }
+                        avatar: 1,
                     },
                     totalMembers: 1,
                     isAdmin: 1,
@@ -171,19 +134,17 @@ export async function GET(request: Request) {
                             input: "$friends",
                             as: "friend",
                             in: {
-                                username: "$friend.username",
-                                email: "$friend.email",
-                                fullName: "$friend.fullName",
-                                avatar: {
-                                    url: "$friend.avatar.url"
-                                },
-                                _id: "$friend._id"
+                                username: "$$friend.username",
+                                email: "$$friend.email",
+                                fullName: "$$friend.fullName",
+                                avatar: "$$friend.avatar",
+                                _id: "$$friend._id"
                             }
                         }
                     },
                     avatar: 1 // Include the avatar field
                 }
-            }            
+            }
         ]);
 
         // Check if the group exists

@@ -6,7 +6,7 @@ import { createResponse } from "@/utils/ApiResponse";
 import { auth } from "@clerk/nextjs/server";
 import mongoose, { isValidObjectId } from "mongoose";
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
     await connect();
 
     try {

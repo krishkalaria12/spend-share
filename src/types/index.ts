@@ -6,14 +6,6 @@ export type Feedback = {
     isLiked: boolean;
 };
 
-export interface Friend {
-    _id: string;
-    username: string;
-    email: string;
-    fullName: string;
-    avatar: string;
-}
-
 export interface Expense {
     _id: string;
     title: string;
@@ -45,10 +37,38 @@ export interface GroupFriend {
     avatar: string;
 }
 
+export interface Friend {
+    _id: string;
+    username: string;
+    email: string;
+    fullName: string;
+    avatar: string;
+    isAdmin?: boolean;
+}
+
 export interface Group {
     _id: string;
     name: string;
     description: string;
+    friends: Friend[];
     members: Friend[];
     avatar: string;
+    isAdmin?: boolean;
+    totalMembers?: number;
 }
+
+export interface Transaction {
+    _id: string;
+    title: string;
+    amount: number;
+    description: string;
+    category: string;
+    paid: boolean;
+    creditor: {
+        _id: string;
+        username: string;
+        avatar: string;
+    };
+    createdAt: string;
+}
+

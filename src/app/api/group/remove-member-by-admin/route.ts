@@ -11,7 +11,7 @@ export async function DELETE(request: Request) {
 
     try {
         const {groupId, memberId} = await request.json(); 
-        
+        console.log(groupId, memberId);
         const { has, sessionClaims } = auth();
         const currentUserId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
