@@ -37,3 +37,18 @@ export interface ExpenseCategory {
     category: string;
     expenses: Expense[];
 }
+
+export interface GroupFriend {
+    _id: string;
+    username: string;
+    email: string;
+    avatar: string;
+}
+
+export interface Group {
+    _id: string;
+    name: string;
+    description: string;
+    members: Friend[];
+    avatar: string;
+}

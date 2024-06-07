@@ -5,10 +5,7 @@ export interface IGroup extends Document {
     description: string;
     members: mongoose.Types.ObjectId[];
     admin: mongoose.Types.ObjectId;
-    avatar: {
-        public_id: string;
-        url: string;
-    };
+    avatar: string;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -23,6 +20,10 @@ const groupSchema: Schema<IGroup> = new Schema({
         type: String,
         required: [true, "Description for the group is required"],
     },
+    avatar: {
+        type: String,
+        default: "https://res.cloudinary.com/krishbackend/image/upload/v1712999375/kpvg81dod9pzjaxabbpe.png",
+    },
     members: [{
         type: Schema.Types.ObjectId,
         ref: 'User',
@@ -32,16 +33,6 @@ const groupSchema: Schema<IGroup> = new Schema({
         ref: 'User',
         required: [true, "Admin for the group is required"],
     },
-    avatar: {
-        public_id: {
-            type: String,
-            default: "kpvg81dod9pzjaxabbpe"
-        },
-        url: {
-            type: String,
-            default: "https://res.cloudinary.com/krishbackend/image/upload/v1712999375/kpvg81dod9pzjaxabbpe.png"
-        }
-    }
 }, {
     timestamps: true,
 });

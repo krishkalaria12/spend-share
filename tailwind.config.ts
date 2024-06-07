@@ -1,3 +1,4 @@
+import { withUt } from "uploadthing/tw";
 import type { Config } from "tailwindcss"
 const defaultTheme = require("tailwindcss/defaultTheme");
 const svgToDataUri = require("mini-svg-data-uri");
@@ -126,7 +127,7 @@ const config = {
   ],
 } satisfies Config
 
-export default config
+export default withUt(config)
 
 function addVariablesForColors({ addBase, theme }: any) {
   let allColors = flattenColorPalette(theme("colors"));
