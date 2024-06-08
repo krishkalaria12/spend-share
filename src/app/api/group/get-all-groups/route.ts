@@ -82,8 +82,6 @@ export async function GET(request: Request) {
             return new Response(JSON.stringify(createError("No groups found", 404, false)), { status: 404 });
         }
 
-        console.log(`Groups found: ${JSON.stringify(groups, null, 2)}`);
-
         return new Response(
             JSON.stringify(createResponse("Successfully fetched groups", 200, true, groups)),
             { status: 200 }

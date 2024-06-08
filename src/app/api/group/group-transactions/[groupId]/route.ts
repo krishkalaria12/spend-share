@@ -1,10 +1,9 @@
 import { connect } from "@/lib/db";
-import { Group } from "@/models/group.models";
 import { Transaction } from "@/models/transaction.models";
 import { createError } from "@/utils/ApiError";
 import { createResponse } from "@/utils/ApiResponse";
 import { auth } from "@clerk/nextjs/server";
-import mongoose, { isValidObjectId } from "mongoose";
+import mongoose from "mongoose";
 
 export async function GET(request: Request) {
     await connect();
@@ -35,20 +34,6 @@ export async function GET(request: Request) {
                     localField: "_id",
                     foreignField: "transactionId",
                     as: "owes",
-                    pipeline: [
-                        {
-                            $match: {
-                                debtor: new mongoose.Types.ObjectId(userId)
-                            }
-                        },
-                        {
-                            $project: {
-                                amount: 1,
-                                paid: 1,
-                                creditor: 1,
-                            }
-                        }
-                    ]
                 }
             },
             {
@@ -66,26 +51,63 @@ export async function GET(request: Request) {
                 $unwind: "$creditorInfo"
             },
             {
+                $lookup: {
+                    from: "users",
+                    localField: "owes.debtor",
+                    foreignField: "_id",
+                    as: "debtorInfo"
+                }
+            },
+            {
+                $unwind: "$debtorInfo"
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    totalAmount: { $first: "$amount" },
+                    description: { $first: "$description" },
+                    title: { $first: "$title" },
+                    category: { $first: "$category" },
+                    createdAt: { $first: "$createdAt" },
+                    creditor: { 
+                        $first: {
+                            fullName: "$creditorInfo.fullName",
+                            email: "$creditorInfo.email",
+                            username: "$creditorInfo.username",
+                            avatar: "$creditorInfo.avatar"
+                        }
+                    },
+                    owes: {
+                        $push: {
+                            _id: "$owes._id", // Include owe ID
+                            debtor: {
+                                fullName: "$debtorInfo.fullName",
+                                email: "$debtorInfo.email",
+                                username: "$debtorInfo.username",
+                                avatar: "$debtorInfo.avatar",
+                                clerkId: "$debtorInfo.clerkId"
+                            },
+                            paid: "$owes.paid",
+                            amount: "$owes.amount" // Include amount in the owes object
+                        }
+                    }
+                }
+            },
+            {
                 $project: {
                     _id: 1,
-                    totalAmount: "$amount",
-                    amount: "$owes.amount",
-                    paid: "$owes.paid",
-                    creditor: {
-                        fullName: "$creditorInfo.fullName",
-                        email: "$creditorInfo.email",
-                        username: "$creditorInfo.username",
-                        avatar: "$creditorInfo.avatar"
-                    },
+                    totalAmount: 1,
                     description: 1,
                     title: 1,
                     category: 1,
                     createdAt: 1,
+                    creditor: 1,
+                    owes: 1
                 }
             }
         ]);
 
-        if (!transactions || transactions.length === 0) {
+        if (!transactions) {
             return Response.json(
                 createError(
                     "No transactions found", 404, false

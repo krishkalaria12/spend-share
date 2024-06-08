@@ -1,5 +1,7 @@
 import { connect } from "@/lib/db";
 import { Group } from "@/models/group.models";
+import { Transaction } from "@/models/transaction.models";
+import { Owe } from "@/models/owe.models";
 import User from "@/models/user.models";
 import { createError } from "@/utils/ApiError";
 import { createResponse } from "@/utils/ApiResponse";
@@ -46,6 +48,10 @@ export async function DELETE(request: Request) {
             { _id: { $in: group.members } },
             { $pull: { groups: groupId } }
         );
+
+        // Delete all transactions and owes associated with the group
+        await Transaction.deleteMany({ groupId });
+        await Owe.deleteMany({ groupId });
 
         const deletedData = await Group.findByIdAndDelete(groupId);
 

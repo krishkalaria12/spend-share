@@ -58,6 +58,8 @@ export interface Group {
 }
 
 export interface Transaction {
+    owes: any;
+    totalAmount: any;
     _id: string;
     title: string;
     amount: number;

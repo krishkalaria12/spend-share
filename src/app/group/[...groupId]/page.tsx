@@ -16,6 +16,8 @@ import { Group, Transaction } from "@/types";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ServerError } from "@/components/server-error";
+import { useAuth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
 const GroupId: React.FC = () => {
   const pathname = usePathname();
@@ -23,6 +25,8 @@ const GroupId: React.FC = () => {
 
   const {toast} = useToast();
   const queryClient = useQueryClient();
+
+  const {userId} = useAuth();
   
   const [error, setError] = useState("");
 
@@ -108,6 +112,7 @@ const GroupId: React.FC = () => {
       <TransactionList
         error={error}
         groupId={groupId}
+        currentUserId={userId}
         transactions={groupTransactions || []}
       />
     </>
