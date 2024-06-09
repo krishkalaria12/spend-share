@@ -4,6 +4,7 @@ import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2';
 export interface IFriendship extends Document {
     user: mongoose.Types.ObjectId;
     friend: mongoose.Types.ObjectId;
+    status: 'pending' | 'fulfilled' | 'rejected';
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -19,6 +20,11 @@ const friendshipSchema: Schema<IFriendship> = new Schema(
             type: Schema.Types.ObjectId,
             ref: 'User',
             required: [true, 'Friend is required'],
+        },
+        status: {
+            type: String,
+            enum: ['pending', 'fulfilled', 'rejected'],
+            default: 'pending',
         },
     },
     {

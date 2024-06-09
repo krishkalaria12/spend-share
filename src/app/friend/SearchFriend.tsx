@@ -16,7 +16,7 @@ export const SearchFriend: FC<SearchFriendProps> = ({ loading, searchResults, on
   const showNoResultsMessage = !loading && searchResults.length === 0 && query.trim() !== '';
   
   return (
-    <div className="max-w-3xl w-full mx-auto">
+    <div className="max-w-3xl w-full">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
           Join Forces: Manage Money Together with Friends

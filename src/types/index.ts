@@ -46,6 +46,14 @@ export interface Friend {
     isAdmin?: boolean;
 }
 
+export interface FriendRequest {
+    _id: string;
+    user: Friend;
+    status: 'pending' | 'fulfilled';
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export interface Group {
     _id: string;
     name: string;

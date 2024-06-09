@@ -47,9 +47,12 @@ const CreateGroupPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [imageUploadUrl, setImageUploadUrl] = useState<string | null>(null);
 
-  const { data: friends, isLoading: loadingFriends, isError } = useQuery<Friend[]>({
+  const { data: friendsData, isLoading: loadingFriends, isError } = useQuery<Friend[]>({
     queryKey: ["friends"],
-    queryFn: getAllFriends,
+    queryFn: async () => {
+      const data = await getAllFriends();
+      return data.friends;
+    },
   });
 
   const createGroupMutation = useMutation({
@@ -84,7 +87,10 @@ const CreateGroupPage: React.FC = () => {
     },
   });
 
-  const options = friends?.map((friend) => ({
+  console.log(friendsData);
+  
+
+  const options = friendsData?.map((friend) => ({
     value: friend._id,
     label: friend.username,
   })) || [];
@@ -112,7 +118,7 @@ const CreateGroupPage: React.FC = () => {
     );
   }
 
-  if (isError) {
+  if (isError || !friendsData) {
     return <ServerError />;
   }
 
@@ -224,9 +230,9 @@ const CreateGroupPage: React.FC = () => {
               />
               <Button disabled={createGroupMutation.isPending} type="submit">
                 {createGroupMutation.isPending ? (
-                  <div className="flex items-center space-x-2 text-lg font-semibold text-gray-500">
+                  <div className="flex items-center space-x-2 text-gray-500">
                     <Loader2 className="animate-spin" size={16} />
-                    <span>Creating...</span>
+                    {"Creating..."}
                   </div>
                 ) : (
                   "Create Group"

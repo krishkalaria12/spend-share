@@ -1,12 +1,10 @@
-"use client"
-
 import React, { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { deleteExpense, getAllExpensesByCategory } from '@/actions/expense.actions';
+import { deleteExpense } from '@/actions/expense.actions';
 import { ExpenseCategory } from '@/types';
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
@@ -61,85 +59,77 @@ const ListExpense: React.FC<ListExpenseProps> = ({ expenses }) => {
   const categoryExpenses = expenses?.find(exp => exp.category === selectedCategory)?.expenses || [];
   
   return (
-    categoryExpenses.length==0 ? (
-      <p className="text-center text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">No expenses Found! Add your expense now to get started.</p>
-    ) : (
-      <Tabs value={selectedCategory}>
-        <div className="flex items-center justify-between">
-          <TabsList>
-            {expenses?.map((category) => (
-              <TabsTrigger key={category.category} value={category.category} onClick={() => handleCategoryChange(category.category)}>
-                {category.category}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          <div>
-            <DeleteAllExpense />
+    <div className="overflow-x-auto">
+      {categoryExpenses.length==0 ? (
+        <p className="text-center text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">No expenses Found! Add your expense now to get started.</p>
+      ) : (
+        <Tabs value={selectedCategory}>
+          <div className="flex items-center justify-between">
+            <TabsList>
+              {expenses?.map((category) => (
+                <TabsTrigger key={category.category} value={category.category} onClick={() => handleCategoryChange(category.category)}>
+                  {category.category}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            <div>
+              <DeleteAllExpense />
+            </div>
           </div>
-        </div>
-        <TabsContent value={selectedCategory}>
-          {categoryExpenses.length === 0 ? (
-            <div className="text-center py-4">No expenses available for this category.</div>
-          ) : (
-            <Card x-chunk="dashboard-05-chunk-3">
-              <CardHeader className="px-7">
-                <CardTitle>{selectedCategory} Expenses</CardTitle>
-                <CardDescription>Total: ₹{categoryExpenses.reduce((acc, curr) => acc + curr.amount, 0)}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {categoryExpenses.map((item) => (
-                      <TableRow key={item._id}>
-                        <TableCell>{item.title}</TableCell>
-                        <TableCell>₹{item.amount}</TableCell>
-                        <TableCell
-                          style={{
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          }}
-                        >
-                          {item.description}
-                        </TableCell>
-                        <TableCell>
-                          {new Date(item.createdAt).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            disabled={mutation.isPending}
-                            onClick={() => handleDeleteExpense(item._id)}
-                            variant="destructive"
-                          >
-                            {mutation.isPending ? (
-                              <span className="mr-2">
-                                <Loader2 size={16} className="animate-spin" />
-                              </span>
-                            ) : (
-                              "Delete"
-                            )}
-                            {mutation.isPending && "Deleting..."}
-                          </Button>
-                        </TableCell>
+          <TabsContent value={selectedCategory}>
+            {categoryExpenses.length === 0 ? (
+              <div className="text-center py-4">No expenses available for this category.</div>
+            ) : (
+              <Card x-chunk="dashboard-05-chunk-3">
+                <CardHeader className="px-7">
+                  <CardTitle>{selectedCategory} Expenses</CardTitle>
+                  <CardDescription>Total: ₹{categoryExpenses.reduce((acc, curr) => acc + curr.amount, 0)}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-      </Tabs>
-    )
+                    </TableHeader>
+                    <TableBody>
+                      {categoryExpenses.map((item) => (
+                        <TableRow key={item._id}>
+                          <TableCell>{item.title}</TableCell>
+                          <TableCell>₹{item.amount}</TableCell>
+                          <TableCell>{item.description}</TableCell>
+                          <TableCell>{new Date(item.createdAt).toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            <Button
+                              disabled={mutation.isPending}
+                              onClick={() => handleDeleteExpense(item._id)}
+                              variant="destructive"
+                            >
+                              {mutation.isPending ? (
+                                <span className="mr-2">
+                                  <Loader2 size={16} className="animate-spin" />
+                                </span>
+                              ) : (
+                                "Delete"
+                              )}
+                              {mutation.isPending && "Deleting..."}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
+      )}
+    </div>
   );
 };
 

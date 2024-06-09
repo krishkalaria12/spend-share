@@ -99,6 +99,9 @@ const GroupId: React.FC = () => {
     return <ServerError />;
   }
 
+  console.log(groupDetails?.friends);
+  
+
   return (
     <>
       <GroupDetails

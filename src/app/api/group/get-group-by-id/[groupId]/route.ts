@@ -4,6 +4,7 @@ import { createError } from "@/utils/ApiError";
 import { createResponse } from "@/utils/ApiResponse";
 import { auth } from "@clerk/nextjs/server";
 import mongoose, { isValidObjectId } from "mongoose";
+import { Friendship } from "@/models/friendship.models";
 
 export async function GET(request: Request) {
     await connect();
@@ -81,10 +82,41 @@ export async function GET(request: Request) {
             },
             {
                 $lookup: {
-                    from: "users",
-                    localField: "admin.friends",
-                    foreignField: "_id",
-                    as: "adminFriends" // Populate admin's friends details
+                    from: "friendships",
+                    let: { adminId: "$admin._id" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$user", "$$adminId"] },
+                                        { $eq: ["$status", "fulfilled"] }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "users",
+                                localField: "friend",
+                                foreignField: "_id",
+                                as: "friendDetails"
+                            }
+                        },
+                        {
+                            $unwind: "$friendDetails"
+                        },
+                        {
+                            $project: {
+                                "friendDetails._id": 1,
+                                "friendDetails.username": 1,
+                                "friendDetails.email": 1,
+                                "friendDetails.fullName": 1,
+                                "friendDetails.avatar": 1
+                            }
+                        }
+                    ],
+                    as: "adminFriends"
                 }
             },
             {
@@ -95,7 +127,7 @@ export async function GET(request: Request) {
                             as: "friend",
                             cond: {
                                 $not: {
-                                    $in: ["$$friend._id", "$members._id"] // Filter out friends who are already members of the group
+                                    $in: ["$$friend.friendDetails._id", "$members._id"] // Filter out friends who are already members of the group
                                 }
                             }
                         }
@@ -134,11 +166,11 @@ export async function GET(request: Request) {
                             input: "$friends",
                             as: "friend",
                             in: {
-                                username: "$$friend.username",
-                                email: "$$friend.email",
-                                fullName: "$$friend.fullName",
-                                avatar: "$$friend.avatar",
-                                _id: "$$friend._id"
+                                username: "$$friend.friendDetails.username",
+                                email: "$$friend.friendDetails.email",
+                                fullName: "$$friend.friendDetails.fullName",
+                                avatar: "$$friend.friendDetails.avatar",
+                                _id: "$$friend.friendDetails._id"
                             }
                         }
                     },

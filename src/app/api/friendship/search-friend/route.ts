@@ -1,5 +1,6 @@
 import { connect } from "@/lib/db";
 import User from "@/models/user.models";
+import { Friendship } from "@/models/friendship.models";
 import { createError } from "@/utils/ApiError";
 import { createResponse } from "@/utils/ApiResponse";
 import { auth } from "@clerk/nextjs/server";
@@ -22,40 +23,57 @@ export async function GET(request: Request) {
       );
     }
 
-    // for using Full Text based search u need to create a search index in mongoDB atlas
-    // you can include field mapppings in search index eg.title, description, as well
-    // Field mappings specify which fields within your documents should be indexed for text search.
-    // this helps in seraching only in title, desc providing faster search results
-    // here the name of search index is 'search-user'
+    if (!isValidObjectId(userId)) {
+      return new Response(
+        JSON.stringify(createError("Unauthorized", 401, false)),
+        { status: 401 }
+      );
+    }
+
+    // Get the user's friends and pending requests
+    const friendIds = await Friendship.aggregate([
+      {
+        $match: {
+          $or: [
+            { user: new mongoose.Types.ObjectId(userId) },
+            { friend: new mongoose.Types.ObjectId(userId) }
+          ]
+        }
+      },
+      {
+        $project: {
+          friend: {
+            $cond: {
+              if: { $eq: ["$user", new mongoose.Types.ObjectId(userId)] },
+              then: "$friend",
+              else: "$user"
+            }
+          }
+        }
+      }
+    ]);
+
+    const excludedUserIds = friendIds.map(friendship => friendship.friend);
 
     const pipeline: any[] = [];
 
     if (query) {
-      if (!isValidObjectId(userId)) {
-        return new Response(
-          JSON.stringify(createError("Unauthorized", 401, false)),
-          { status: 401 }
-        );
-      }
-
       pipeline.push({
         $search: {
           index: "search-user",
           text: {
             query,
-            path: ["username", "fullName"],
-          },
-        },
+            path: ["username", "fullName"]
+          }
+        }
       });
     }
 
-    if (userId) {
-      pipeline.push({
-        $match: {
-          _id: { $ne: new mongoose.Types.ObjectId(userId) },
-        },
-      });
-    }
+    pipeline.push({
+      $match: {
+        _id: { $nin: [...excludedUserIds, new mongoose.Types.ObjectId(userId)] }
+      }
+    });
 
     pipeline.push({
       $project: {
@@ -63,8 +81,8 @@ export async function GET(request: Request) {
         username: 1,
         email: 1,
         fullName: 1,
-        avatar: 1,
-      },
+        avatar: 1
+      }
     });
 
     const friends = await User.aggregate(pipeline);

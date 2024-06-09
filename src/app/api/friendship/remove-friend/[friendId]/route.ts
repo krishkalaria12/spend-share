@@ -10,8 +10,7 @@ export async function DELETE(request: Request) {
   await connect();
 
   try {
-    const url = new URL(request.url);
-    const friendId = url.pathname.split("remove-friend/")[1];
+    const friendId = request.url.split("remove-friend/")[1];
 
     if (!friendId) {
       return new Response(
@@ -42,6 +41,10 @@ export async function DELETE(request: Request) {
       friend: friendId
     });
 
+    console.log(friendship);
+    console.log(friendId);
+    
+
     if (!friendship) {
       return new Response(
         JSON.stringify(createError("Friendship not found", 404, false)),
@@ -60,6 +63,9 @@ export async function DELETE(request: Request) {
 
     await User.findByIdAndUpdate(mongoId, { $pull: { friends: friendId } });
     await User.findByIdAndUpdate(friendId, { $pull: { friends: mongoId } });
+
+    console.log(deletedFriendship);
+    
 
     return new Response(
       JSON.stringify(createResponse("Friend deleted successfully", 200, true, deletedFriendship)),
