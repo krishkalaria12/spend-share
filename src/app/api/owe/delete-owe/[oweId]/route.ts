@@ -1,5 +1,6 @@
 import { connect } from "@/lib/db";
 import { Owe } from "@/models/owe.models";
+import { Transaction } from "@/models/transaction.models";
 import { createError } from "@/utils/ApiError";
 import { createResponse } from "@/utils/ApiResponse";
 import { auth } from "@clerk/nextjs/server";
@@ -34,6 +35,12 @@ export async function DELETE(request: Request) {
             return Response.json(createError("Unauthorized to delete owe", 401, false));
         }
 
+        // Delete the transaction associated with the owe
+        const transaction = await Transaction.findOne({ oweId });
+        if (transaction) {
+            await Transaction.findByIdAndDelete(transaction._id);
+        }
+
         // Delete the owe
         const deletedOwe = await Owe.findByIdAndDelete(oweId);
 
@@ -41,7 +48,7 @@ export async function DELETE(request: Request) {
             return Response.json(createError("Owe does not exist", 404, false));
         }
 
-        return Response.json(createResponse("Owe deleted successfully", 200, true));
+        return Response.json(createResponse("Owe and associated transaction deleted successfully", 200, true));
     } catch (error) {
         console.log(error);
         return Response.json(createError("Internal server error", 500, false));

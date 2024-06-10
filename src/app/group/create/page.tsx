@@ -87,9 +87,6 @@ const CreateGroupPage: React.FC = () => {
     },
   });
 
-  console.log(friendsData);
-  
-
   const options = friendsData?.map((friend) => ({
     value: friend._id,
     label: friend.username,

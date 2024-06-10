@@ -82,3 +82,34 @@ export interface Transaction {
     createdAt: string;
 }
 
+export interface Owe {
+    _id: string;
+    category: string;
+    amount: number;
+    title: string;
+    description?: string;
+    paid: boolean;
+    debtor: string;
+    creditor: string;
+    status: 'pending' | 'confirmed';
+    debtorInfo?: {
+        email: string;
+        fullName: string;
+        username: string;
+        avatar: string;
+    };
+    creditorInfo?: {
+        email: string;
+        fullName: string;
+        username: string;
+        avatar: string;
+    };
+}
+
+export interface OweCreation {
+    category: string;
+    amount: number;
+    title: string;
+    description?: string;
+    friendId?: string;
+}

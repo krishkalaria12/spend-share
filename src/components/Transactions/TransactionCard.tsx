@@ -74,7 +74,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction, currentU
   return (
     <>
       <div className="flex flex-col sm:flex-row sm:justify-between p-4 border rounded-lg dark:border-gray-600 border-gray-200 dark:bg-gray-800 bg-white dark:text-white text-gray-800 mb-4 shadow-lg">
-        <div className="flex items-center sm:flex-col flex-row justify-between sm:space-y-2 space-x-2 sm:space-x-0">
+        <div className="flex items-center flex-col justify-between sm:space-y-2 space-x-2 sm:space-x-0">
           <div className="flex items-center space-x-4 mb-4 sm:mb-0">
             <Avatar className="h-16 w-16">
               <AvatarImage src={transaction.creditor.avatar} alt="Avatar" />
@@ -103,13 +103,13 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction, currentU
               </Button>
             </div>
         </div>
-        <div className="flex sm:flex-col flex-row justify-between items-end space-y-2">
+        <div className="flex sm:flex-col flex-row justify-between items-end space-y-2 sm:space-x-0 space-x-4">
           <div className="text-right">
             <p className="text-lg font-semibold">Total Amount</p>
             <p className="text-xl font-semibold">₹{transaction.totalAmount.toFixed(2)}</p>
           </div>
           <div className="text-right">
-            <p className="text-lg font-semibold">Your Amount to be Paid</p>
+            <p className="text-lg font-semibold">Amount to be Paid</p>
             <p className="text-xl font-semibold">₹{currentUserOwe ? currentUserOwe.amount.toFixed(2) : "0.00"}</p>
           </div>
           <div className="flex space-x-2 mt-4">

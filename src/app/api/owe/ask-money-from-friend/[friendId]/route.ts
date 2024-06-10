@@ -17,6 +17,8 @@ export async function POST(request: Request) {
         const { has, sessionClaims } = auth();
         const userId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
+        const username = sessionClaims?.username;
+
         const mongoId = new mongoose.Types.ObjectId(userId);
 
         if (!has) {
@@ -60,12 +62,11 @@ export async function POST(request: Request) {
         }
 
         const transaction = await Transaction.create({
-            debtor: friendId,
-            creditor: userId,
+            userId, // Ensure userId is included here
             category,
             amount,
             title,
-            description: `Requested ${amount} ${category.toLowerCase()} from ${friendId} for ${title}`
+            description: `Requested ${amount} ${category.toLowerCase()} from ${username ? username : friendId} for ${title}`
         });
 
         if (!transaction) {

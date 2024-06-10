@@ -18,7 +18,6 @@ const OweSchema: Schema<IOwe> = new Schema({
     groupId: {
         type: Schema.Types.ObjectId,
         ref: 'Group',
-        required: [true, "GroupId for the owe is required"]
     },
     creditor: {
         type: Schema.Types.ObjectId,

@@ -6,9 +6,6 @@ import { Link } from 'next-view-transitions'
 import { NavigationMenuLink, NavigationMenuList, NavigationMenu } from "@/components/ui/navigation-menu"
 import ModeToggle from "@/components/theme-changer"
 import Image from "next/image"
-
-import { ClerkLoaded, ClerkLoading, SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
-import { Loader } from "lucide-react"
 import ClerkNavbar from "./ClerkNavbar"
 
 export const Navbar = () => {
@@ -34,6 +31,10 @@ export const Navbar = () => {
             link: "Feedback",
             href: "/feedback"
         },
+        {
+          link: "Borrow from Friend",
+          href: "/ask-friend-for-money"
+        }
     ]
 
 
