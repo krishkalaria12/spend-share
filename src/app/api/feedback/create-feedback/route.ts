@@ -44,7 +44,7 @@ export async function POST(request: Request) {
         );
     } catch (error: any) {
         throw createError(
-                "Internal Server Error", 200, false, error
-            );
+            "Internal Server Error", 500, false, error
+        );
     }
 }

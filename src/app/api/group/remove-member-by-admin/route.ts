@@ -11,47 +11,47 @@ export async function DELETE(request: Request) {
 
     try {
         const {groupId, memberId} = await request.json(); 
-        console.log(groupId, memberId);
+
         const { has, sessionClaims } = auth();
         const currentUserId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
         if (!has) {
-            return Response.json(createError("Unauthorized", 401, false));
+            throw createError("Unauthorized", 401, false);
         }
 
         if (!currentUserId) {
-            return Response.json(createError("Unauthorized: User not logged in", 401, false));
+            throw createError("Unauthorized: User not logged in", 401, false);
         }
 
         if (!isValidObjectId(currentUserId)) {
-            return Response.json(createError("Invalid user ID", 400, false));
+            throw createError("Invalid user ID", 400, false);
         }
 
         if (!groupId || !memberId) {
-            return Response.json(createError("Invalid group ID or member ID", 400, false));
+            throw createError("Invalid group ID or member ID", 400, false);
         }
 
         if (!isValidObjectId(groupId) || !isValidObjectId(memberId)) {
-            return Response.json(createError("Invalid group ID or member ID", 400, false));
+            throw createError("Invalid group ID or member ID", 400, false);
         }
 
         const group = await Group.findById(groupId);
 
         if (!group) {
-            return Response.json(createError("Invalid group ID", 404, false));
+            throw createError("Invalid group ID", 404, false);
         }
 
         const userId = new mongoose.Types.ObjectId(currentUserId);
 
         // Check if the current user is the admin of the group
         if (!group.admin.equals(userId)) {
-            return Response.json(createError("Unauthorized: You are not the admin of this group", 401, false));
+            throw createError("Unauthorized: You are not the admin of this group", 401, false);
         }
 
         // Check if the member exists in the group
         const memberIndex = group.members.indexOf(new mongoose.Types.ObjectId(memberId));
         if (memberIndex === -1) {
-            return Response.json(createError("Member not found in group", 404, false));
+            throw createError("Member not found in group", 404, false);
         }
 
         // Remove the member from the group
@@ -67,7 +67,7 @@ export async function DELETE(request: Request) {
             .populate("admin", "_id");
 
         if (!updatedGroup) {
-            return Response.json(createError("Invalid group ID", 404, false));
+            throw createError("Invalid group ID", 404, false);
         }
 
         // Format the response with isAdmin flag for each member
@@ -99,6 +99,6 @@ export async function DELETE(request: Request) {
         );
     } catch (error) {
         console.error("Error while removing member from group:", error);
-        return Response.json(createError("Error while removing member from group", 500, false));
+        throw createError("Error while removing member from group", 500, false);
     }
 }

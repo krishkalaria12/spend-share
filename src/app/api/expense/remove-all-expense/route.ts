@@ -12,17 +12,15 @@ export async function DELETE(request: Request) {
         const mongoId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
         if (!has || !mongoId) {
-            return Response.json(createError("Unauthorized", 401, false));
+            throw createError("Unauthorized", 401, false);
         }
 
         // Delete all expenses where the owner's mongoId matches
         const deleteResult = await Expense.deleteMany({ owner: mongoId });
 
         if (deleteResult.deletedCount === 0) {
-            return Response.json(
-                createError(
-                    "No expenses found to delete", 404, false
-                )
+            throw createError(
+                "No expenses found to delete", 404, false
             );
         }
 
@@ -33,10 +31,8 @@ export async function DELETE(request: Request) {
         );
     } catch (error) {
         console.error(error);
-        return Response.json(
-            createError(
-                "Internal Server Error", 500, false, error
-            )
+        throw createError(
+            "Internal Server Error", 500, false, error
         );
     }
 }

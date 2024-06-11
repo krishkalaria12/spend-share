@@ -16,11 +16,11 @@ export async function DELETE(request: Request) {
         const userId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
         if (!has) {
-            return Response.json(createError("Unauthorized", 401, false));
+            throw createError("Unauthorized", 401, false);
         }
 
         if (!userId || !mongoose.isValidObjectId(userId) || !oweId || !mongoose.isValidObjectId(oweId)) {
-            return Response.json(createError("Invalid user ID or OweId", 400, false));
+            throw createError("Invalid user ID or OweId", 400, false);
         }
 
         const mongoId = new mongoose.Types.ObjectId(userId);
@@ -28,11 +28,11 @@ export async function DELETE(request: Request) {
         const owe = await Owe.findById(oweId);
 
         if (!owe) {
-            return Response.json(createError("Owe does not exist", 404, false));
+            throw createError("Owe does not exist", 404, false);
         }
 
         if (!mongoId.equals(owe?.creditor)) {
-            return Response.json(createError("Unauthorized to delete owe", 401, false));
+            throw createError("Unauthorized to delete owe", 401, false);
         }
 
         // Delete the transaction associated with the owe
@@ -45,12 +45,12 @@ export async function DELETE(request: Request) {
         const deletedOwe = await Owe.findByIdAndDelete(oweId);
 
         if (!deletedOwe) {
-            return Response.json(createError("Owe does not exist", 404, false));
+            throw createError("Owe does not exist", 404, false);
         }
 
         return Response.json(createResponse("Owe and associated transaction deleted successfully", 200, true));
     } catch (error) {
-        console.log(error);
-        return Response.json(createError("Internal server error", 500, false));
+        console.log("Error while deleting owe", error);
+        throw createError("Internal server error", 500, false);
     }
 }

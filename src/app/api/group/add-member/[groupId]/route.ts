@@ -18,34 +18,34 @@ export async function POST(request: Request) {
         const userId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
         if (!has) {
-            return Response.json(createError("Unauthorized", 401, false));
+            throw createError("Unauthorized", 401, false);
         }
 
         // Validate group ID
         if (!isValidObjectId(groupId)) {
-            return Response.json(createError("Invalid group ID", 400, false));
+            throw createError("Invalid group ID", 400, false);
         }
 
         if (!groupId) {
-            return Response.json(createError("Invalid group ID", 400, false));
+            throw createError("Invalid group ID", 400, false);
         }
 
         const group = await Group.findById(groupId);
 
         // Check if the group exists
         if (!group) {
-            return Response.json(createError("Group does not exist", 404, false));
+            throw createError("Group does not exist", 404, false);
         }
 
         const mongoId = new mongoose.Types.ObjectId(userId);
 
         // Check if the current user is the admin of the group
         if (!mongoId.equals(group.admin)) {
-            return Response.json(createError("Unauthorized to delete group", 401, false));
+            throw createError("Unauthorized to delete group", 401, false);
         }
 
         if (!Array.isArray(memberIds) || memberIds.length === 0) {
-            return Response.json(createError("Member IDs must be provided as an array", 400, false));
+            throw createError("Member IDs must be provided as an array", 400, false);
         }
 
         const invalidMemberIds = [];
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
 
         // Throw an error if any invalid member IDs were found
         if (invalidMemberIds.length > 0) {
-            return Response.json(createError(`Invalid member IDs: ${invalidMemberIds.join(", ")}`, 400, false));
+            throw createError(`Invalid member IDs: ${invalidMemberIds.join(", ")}`, 400, false);
         }
 
         for (const memberId of memberIds) {
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
             .populate("admin", "_id");
         
         if (!updatedGroup) {
-            return Response.json(createError("Group does not exist", 404, false));
+            throw createError("Group does not exist", 404, false);
         }
     
         // Format the response with isAdmin flag for each member
@@ -114,11 +114,9 @@ export async function POST(request: Request) {
         );
 
     } catch (error) {
-        console.log(error);
-        return Response.json(
-            createError(
-                "Internal Server Error", 500, false
-            )
+        console.log("Error while adding members to group", error);
+        throw createError(
+            "Internal Server Error", 500, false
         );
     }
 

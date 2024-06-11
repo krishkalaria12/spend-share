@@ -15,11 +15,11 @@ export async function GET(request: Request) {
         const userId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
         if (!has) {
-            return Response.json(createError("Unauthorized", 401, false));
+            throw createError("Unauthorized", 401, false);
         }
 
         if (!userId || !mongoose.isValidObjectId(userId) || !groupId || !mongoose.isValidObjectId(groupId)) {
-            return Response.json(createError("Invalid user ID or group ID", 400, false));
+            throw createError("Invalid user ID or group ID", 400, false);
         }
 
         const transactions = await Transaction.aggregate([
@@ -108,10 +108,8 @@ export async function GET(request: Request) {
         ]);
 
         if (!transactions) {
-            return Response.json(
-                createError(
-                    "No transactions found", 404, false
-                )
+            throw createError(
+                "No transactions found", 404, false
             );
         }
 
@@ -125,10 +123,8 @@ export async function GET(request: Request) {
         );
     } catch (error) {
         console.error("Error while fetching group transactions:", error);
-        return Response.json(
-            createError(
-                "Error while fetching group transactions", 500, false
-            )
+        throw createError(
+            "Error while fetching group transactions", 500, false
         );
     }
 }

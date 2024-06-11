@@ -16,35 +16,35 @@ export async function DELETE(request: Request) {
         const currentUserId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
         if (!has) {
-            return Response.json(createError("Unauthorized", 401, false));
+            throw createError("Unauthorized", 401, false);
         }
 
         // Check if group ID is provided
         if (!groupId) {
-            return Response.json(createError("Invalid group ID", 400, false));
+            throw createError("Invalid group ID", 400, false);
         }
 
         // Check if group ID is a valid ObjectId
         if (!mongoose.isValidObjectId(groupId)) {
-            return Response.json(createError("Invalid group ID", 400, false));
+            throw createError("Invalid group ID", 400, false);
         }
 
         // Check if the current user is authenticated
         if (!currentUserId) {
-            return Response.json(createError("Unauthorized", 401, false));
+            throw createError("Unauthorized", 401, false);
         }
 
         // Find the group
         const group = await Group.findById(groupId);
         if (!group) {
-            return Response.json(createError("Invalid group ID", 404, false));
+            throw createError("Invalid group ID", 404, false);
         }
 
         const userId = new mongoose.Types.ObjectId(currentUserId);
 
         // Check if the user is a member of the group
         if (!group.members.includes(userId)) {
-            return Response.json(createError("You are not a member of this group", 404, false));
+            throw createError("You are not a member of this group", 404, false);
         }
 
         // Check if the leaving member is the admin
@@ -52,7 +52,7 @@ export async function DELETE(request: Request) {
             // If the leaving member is the admin, change admin to another member in the group
             const newAdminId = group.members.find(memberId => !memberId.equals(currentUserId));
             if (!newAdminId) {
-                return Response.json(createError("Failed to leave group: No alternative admin found", 500, false));
+                throw createError("Failed to leave group: No alternative admin found", 500, false);
             }
             group.admin = newAdminId;
         }
@@ -71,7 +71,7 @@ export async function DELETE(request: Request) {
             )
         );
     } catch (error: any) {
-        console.log(error);
-        return Response.json(createError("Failed to leave group", 500, false));
+        console.log("Error while leaving group", error);
+        throw createError("Failed to leave group", 500, false);
     }
 }

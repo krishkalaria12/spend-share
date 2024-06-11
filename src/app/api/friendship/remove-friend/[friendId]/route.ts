@@ -13,27 +13,18 @@ export async function DELETE(request: Request) {
     const friendId = request.url.split("remove-friend/")[1];
 
     if (!friendId) {
-      return new Response(
-        JSON.stringify(createError("Invalid friend ID", 400, false)),
-        { status: 400 }
-      );
+      throw createError("Invalid friend ID", 400, false);
     }
 
     const { has, sessionClaims } = auth();
     const mongoId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
     if (!has || !mongoId) {
-      return new Response(
-        JSON.stringify(createError("Unauthorized", 401, false)),
-        { status: 401 }
-      );
+      throw createError("Unauthorized", 401, false);
     }
 
     if (!isValidObjectId(friendId)) {
-      return new Response(
-        JSON.stringify(createError("Invalid friend ID", 400, false)),
-        { status: 400 }
-      );
+      throw createError("Invalid friend ID", 400, false);
     }
 
     const friendship = await Friendship.findOne({
@@ -41,31 +32,18 @@ export async function DELETE(request: Request) {
       friend: friendId
     });
 
-    console.log(friendship);
-    console.log(friendId);
-    
-
     if (!friendship) {
-      return new Response(
-        JSON.stringify(createError("Friendship not found", 404, false)),
-        { status: 404 }
-      );
+      throw createError("Friendship not found", 404, false);
     }
 
     const deletedFriendship = await Friendship.findByIdAndDelete(friendship._id);
 
     if (!deletedFriendship) {
-      return new Response(
-        JSON.stringify(createError("Failed to delete friendship", 400, false)),
-        { status: 400 }
-      );
+      throw createError("Failed to delete friendship", 400, false);
     }
 
     await User.findByIdAndUpdate(mongoId, { $pull: { friends: friendId } });
     await User.findByIdAndUpdate(friendId, { $pull: { friends: mongoId } });
-
-    console.log(deletedFriendship);
-    
 
     return new Response(
       JSON.stringify(createResponse("Friend deleted successfully", 200, true, deletedFriendship)),
@@ -73,9 +51,6 @@ export async function DELETE(request: Request) {
     );
   } catch (error) {
     console.error("Error while deleting friend:", error);
-    return new Response(
-      JSON.stringify(createError("Internal Server Error", 500, false, error)),
-      { status: 500 }
-    );
+    throw createError("Internal Server Error", 500, false, error);
   }
 }

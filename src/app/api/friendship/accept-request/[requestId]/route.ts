@@ -13,46 +13,28 @@ export async function POST(request: Request) {
         const requestId = request.url.split("accept-request/")[1];
 
         if (!requestId) {
-            return new Response(
-                JSON.stringify(createError("Invalid request ID", 400, false)),
-                { status: 400 }
-            );
+            throw createError("Invalid request ID", 400, false);
         }
 
         const { has, sessionClaims } = auth();
         const mongoId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
         if (!has) {
-            return new Response(
-                JSON.stringify(createError("Unauthorized", 401, false)),
-                { status: 401 }
-            );
+            throw createError("Unauthorized", 401, false);
         }
 
         if (!mongoose.isValidObjectId(requestId)) {
-            return new Response(
-                JSON.stringify(createError("Invalid request ID", 400, false)),
-                { status: 400 }
-            );
+            throw createError("Invalid request ID", 400, false);
         }
 
         const friendRequest = await Friendship.findById(requestId);
 
-        console.log(friendRequest);
-        console.log(requestId);
-
         if (!friendRequest || friendRequest.status !== 'pending') {
-            return new Response(
-                JSON.stringify(createError("Friend request not found or already processed", 404, false)),
-                { status: 404 }
-            );
+            throw createError("Friend request not found or already processed", 404, false);
         }
 
         if (!friendRequest.friend.equals(mongoId)) {
-            return new Response(
-                JSON.stringify(createError("Unauthorized to accept this request", 401, false)),
-                { status: 401 }
-            );
+            throw createError("Unauthorized to accept this request", 401, false);
         }
 
         friendRequest.status = 'fulfilled';
@@ -67,9 +49,6 @@ export async function POST(request: Request) {
         );
     } catch (error) {
         console.error("Error while accepting friend request:", error);
-        return new Response(
-            JSON.stringify(createError("Internal Server Error", 500, false, error)),
-            { status: 500 }
-        );
+        throw createError("Internal Server Error", 500, false, error);
     }
 }

@@ -12,27 +12,18 @@ export async function POST(request: Request) {
         const recipientId = request.url.split("send-request/")[1];
         
         if (!recipientId) {
-            return new Response(
-                JSON.stringify(createError("Invalid recipient ID", 400, false)),
-                { status: 400 }
-            );
+            throw createError("Invalid recipient ID", 400, false);
         }
 
         const { has, sessionClaims } = auth();
         const mongoId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
         if (!has) {
-            return new Response(
-                JSON.stringify(createError("Unauthorized", 401, false)),
-                { status: 401 }
-            );
+            throw createError("Unauthorized", 401, false);
         }
 
         if (!mongoose.isValidObjectId(recipientId)) {
-            return new Response(
-                JSON.stringify(createError("Invalid recipient ID", 400, false)),
-                { status: 400 }
-            );
+            throw createError("Invalid recipient ID", 400, false);
         }
 
         const existingRequest = await Friendship.findOne({
@@ -42,10 +33,7 @@ export async function POST(request: Request) {
         });
         
         if (existingRequest) {
-            return new Response(
-                JSON.stringify(createError("Friend request already sent", 400, false)),
-                { status: 400 }
-            );
+            throw createError("Friend request already sent", 400, false);
         }
 
         const friendRequest = await Friendship.create({
@@ -54,10 +42,7 @@ export async function POST(request: Request) {
         });
 
         if (!friendRequest) {
-            return new Response(
-                JSON.stringify(createError("Error sending friend request", 500, false)),
-                { status: 500 }
-            );
+            throw createError("Error sending friend request", 500, false);
         }
 
         return new Response(
@@ -66,9 +51,6 @@ export async function POST(request: Request) {
         );
     } catch (error) {
         console.error("Error while sending friend request:", error);
-        return new Response(
-            JSON.stringify(createError("Internal Server Error", 500, false, error)),
-            { status: 500 }
-        );
+        throw createError("Internal Server Error", 500, false, error);
     }
 }

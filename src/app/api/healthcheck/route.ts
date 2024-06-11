@@ -13,10 +13,8 @@ export async function GET(request: Request) {
         )
     } catch (error) {
         console.log(error);
-        return Response.json(
-            createError(
-                "Internal Server Error", 500, false
-            )
+        throw createError(
+            "Internal Server Error", 500, false
         );
     }
 }

@@ -16,16 +16,16 @@ export async function GET(request: Request) {
         const userId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
         if (!has) {
-            return Response.json(createError("Unauthorized", 401, false));
+            throw createError("Unauthorized", 401, false);
         }
 
         // Validate group ID
         if (!isValidObjectId(groupId)) {
-            return Response.json(createError("Invalid group ID", 400, false));
+            throw createError("Invalid group ID", 400, false);
         }
         
         if (!groupId) {
-            return Response.json(createError("Invalid group ID", 400, false));
+            throw createError("Invalid group ID", 400, false);
         }
 
         // MongoDB aggregation pipeline to fetch group details
@@ -181,10 +181,8 @@ export async function GET(request: Request) {
 
         // Check if the group exists
         if (!group || group.length === 0) {
-            return Response.json(
-                createError(
-                    "Group not found", 404, false
-                )
+            throw createError(
+                "Group not found", 404, false
             );
         }
 
@@ -195,11 +193,9 @@ export async function GET(request: Request) {
             )
         )
     } catch (error) {
-        console.log(error);
-        return Response.json(
-            createError(
-                "Internal Server Error", 500, false
-            )
+        console.log("Error while fetching group details", error);
+        throw createError(
+            "Internal Server Error", 500, false
         );
     }
 }

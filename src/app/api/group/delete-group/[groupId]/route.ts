@@ -18,30 +18,30 @@ export async function DELETE(request: Request) {
         const userId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
         if (!has) {
-            return Response.json(createError("Unauthorized", 401, false));
+            throw createError("Unauthorized", 401, false);
         }
 
         // Validate group ID
         if (!isValidObjectId(groupId)) {
-            return Response.json(createError("Invalid group ID", 400, false));
+            throw createError("Invalid group ID", 400, false);
         }
 
         if (!groupId) {
-            return Response.json(createError("Invalid group ID", 400, false));
+            throw createError("Invalid group ID", 400, false);
         }
 
         const group = await Group.findById(groupId);
 
         // Check if the group exists
         if (!group) {
-            return Response.json(createError("Group does not exist", 404, false));
+            throw createError("Group does not exist", 404, false);
         }
 
         const mongoId = new mongoose.Types.ObjectId(userId);
 
         // Check if the current user is the admin of the group
         if (!mongoId.equals(group.admin)) {
-            return Response.json(createError("Unauthorized to delete group", 401, false));
+            throw createError("Unauthorized to delete group", 401, false);
         }
 
         await User.updateMany(
@@ -73,11 +73,9 @@ export async function DELETE(request: Request) {
         );
 
     } catch (error) {
-        console.log(error);
-        return Response.json(
-            createError(
-                "Internal Server Error", 500, false
-            )
+        console.log("Error while deleting group", error);
+        throw createError(
+            "Internal Server Error", 500, false
         );
     }
 }

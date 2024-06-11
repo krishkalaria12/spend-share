@@ -18,32 +18,32 @@ export async function POST(request: Request) {
         const userId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
         if (!has) {
-        return Response.json(createError("Unauthorized", 401, false));
+            throw createError("Unauthorized", 401, false);
         }
 
         if (!userId || !mongoose.isValidObjectId(userId)) {
-        return Response.json(createError("Invalid user ID", 400, false));
+            throw createError("Invalid user ID", 400, false);
         }
 
         if (!groupId || !mongoose.isValidObjectId(groupId)) {
-        return Response.json(createError("Invalid group ID", 400, false));
+            throw createError("Invalid group ID", 400, false);
         }
 
         if (!amount || isNaN(amount) || amount <= 0) {
-        return Response.json(createError("Invalid amount", 400, false));
+            throw createError("Invalid amount", 400, false);
         }
 
         if (!description) {
-        return Response.json(createError("Invalid description", 400, false));
+            throw createError("Invalid description", 400, false);
         }
 
         const group = await Group.findById(groupId);
         if (!group) {
-        return Response.json(createError("Group does not exist", 404, false));
+            throw createError("Group does not exist", 404, false);
         }
 
         if (!group.members.includes(new mongoose.Types.ObjectId(userId))) {
-        return Response.json(createError("Unauthorized to add member", 401, false));
+            throw createError("Unauthorized to add member", 401, false);
         }
 
         const totalMembers = group.members.length;
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
         });
 
         if (!transaction) {
-            return Response.json(createError("Failed to create transaction", 500, false));
+            throw createError("Failed to create transaction", 500, false);
         }
 
         // Create owe records for each member (excluding the requester) and update with transaction ID
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
         }));
 
         if (!oweRecords) {
-        return Response.json(createError("Failed to create owe records", 500, false));
+            throw createError("Failed to create owe records", 500, false);
         }
 
         const filteredOweRecords = oweRecords.filter(record => record !== null);
@@ -107,7 +107,7 @@ export async function POST(request: Request) {
         )
         );
     } catch (error: any) {
-        console.log(error);
-        return Response.json(createError("Internal server error", 500, false));
+        console.log("Error while requesting money from group", error);
+        throw createError("Internal server error", 500, false);
     }
 }

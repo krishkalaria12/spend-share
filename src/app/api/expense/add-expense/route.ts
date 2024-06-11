@@ -14,19 +14,19 @@ export async function POST(request: Request) {
         const { has, sessionClaims } = auth();
 
         if (!has) {
-            return Response.json(createError("Unauthorized", 401, false));
+            throw createError("Unauthorized", 401, false);
         }
 
         if (!(category || amount || title)) {
-            return Response.json(createError("All fields are required", 401, false));
+            throw createError("All fields are required", 401, false);
         }
 
         if (parseInt(amount) <= 0) {
-            return Response.json(createError("Amount must be greater than 0", 401, false));
+            throw createError("Amount must be greater than 0", 401, false);
         }
 
         if (description && description.length > 200) {
-            return Response.json(createError("Description must be less than 200 characters", 401, false));
+            throw createError("Description must be less than 200 characters", 401, false);
         }
 
         const mongoId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
@@ -40,10 +40,8 @@ export async function POST(request: Request) {
         })
 
         if (!expense) {
-            return Response.json(
-                createError(
-                    "Error Submitting Expense", 500, false
-                )
+            throw createError(
+                "Error Submitting Expense", 500, false
             );
         }
 
@@ -55,10 +53,8 @@ export async function POST(request: Request) {
 
     } catch (error) {
         console.error(error);
-        return Response.json(
-            createError(
-                "Internal Server Error", 200, false, error
-            )
+        throw createError(
+            "Internal Server Error", 200, false, error
         );
     }
 }

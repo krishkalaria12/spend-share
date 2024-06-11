@@ -15,7 +15,7 @@ export async function POST(request: Request) {
         const userId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
         if (!has) {
-            return Response.json(createError("Unauthorized", 401, false));
+            throw createError("Unauthorized", 401, false);
         }
 
         if (!userId || !mongoose.isValidObjectId(userId) || !feedbackId || !mongoose.isValidObjectId(feedbackId)) {
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
         return Response.json(createResponse("Liked successfully", 200, true, { isLiked: true }));
 
     } catch (error) {
-        console.error(error);
+        console.error("Error while liking feedback:", error);
         throw createError("Something went wrong!", 500, false, error);
     }
 }

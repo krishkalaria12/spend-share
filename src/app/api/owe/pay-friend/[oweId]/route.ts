@@ -18,11 +18,11 @@ export async function POST(request: Request) {
         const userId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
         if (!has) {
-            return Response.json(createError("Unauthorized", 401, false));
+            throw createError("Unauthorized", 401, false);
         }
 
         if (!userId || !mongoose.isValidObjectId(userId) || !oweId || !mongoose.isValidObjectId(oweId)) {
-            return Response.json(createError("Invalid user ID or OweId", 400, false));
+            throw createError("Invalid user ID or OweId", 400, false);
         }
 
         const mongoId = new mongoose.Types.ObjectId(userId);
@@ -31,22 +31,22 @@ export async function POST(request: Request) {
         const owe = await Owe.findById(oweId).populate<{ creditor: { _id: string | mongoose.mongo.BSON.ObjectId | mongoose.mongo.BSON.ObjectIdLike | null | undefined; fullName: any; }, debtor: { _id: string | mongoose.mongo.BSON.ObjectId | mongoose.mongo.BSON.ObjectIdLike | null | undefined; fullName: any; } }>("creditor debtor");
 
         if (!owe) {
-            return Response.json(createError("Owe does not exist", 404, false));
+            throw createError("Owe does not exist", 404, false);
         }
 
         // Check if the logged-in user is the debtor of the owe
         if (!mongoId.equals(owe.debtor._id)) {
-            return Response.json(createError("Unauthorized to pay owe", 401, false));
+            throw createError("Unauthorized to pay owe", 401, false);
         }
 
         // Check if the logged-in user is trying to pay themselves
         if (mongoId.equals(owe.creditor._id)) {
-            return Response.json(createError("You cannot pay yourself", 400, false));
+            throw createError("You cannot pay yourself", 400, false);
         }
 
         // Check if the owe has already been paid
         if (owe.paid) {
-            return Response.json(createError("Owe has already been paid", 400, false));
+            throw createError("Owe has already been paid", 400, false);
         }
 
         // Update the owe record to mark it as paid
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
             )
         );
     } catch (error) {
-        console.log(error);
-        return Response.json(createError("Internal server error", 500, false));
+        console.log("Error while paying friend", error);
+        throw createError("Internal server error", 500, false);
     }
 }

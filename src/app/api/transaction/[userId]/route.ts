@@ -12,7 +12,7 @@ export async function GET(request: Request) {
         const userId = request.url.split("transaction/")[1];
 
         if (!userId) {
-            return Response.json(createError("Missing user ID", 400, false));
+            throw createError("Missing user ID", 400, false);
         }
 
         const { has, sessionClaims } = auth();
@@ -20,15 +20,15 @@ export async function GET(request: Request) {
         const requestedUser = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 
         if (!requestedUser) {
-            return Response.json(createError("Unauthorized", 401, false));
+            throw createError("Unauthorized", 401, false);
         }
 
         if (!has) {
-            return Response.json(createError("Unauthorized", 401, false));
+            throw createError("Unauthorized", 401, false);
         }
 
         if (!mongoose.isValidObjectId(userId)) {
-            return Response.json(createError("Invalid user ID", 400, false));
+            throw createError("Invalid user ID", 400, false);
         }
 
         const currentUser = new mongoose.Types.ObjectId(userId);
@@ -72,7 +72,7 @@ export async function GET(request: Request) {
             individualTransactions
         }));
     } catch (error) {
-        console.log(error);
-        return Response.json(createError("Internal server error", 500, false));
+        console.log("Error while fetching transactions", error);
+        throw createError("Internal server error", 500, false);
     }
 }
