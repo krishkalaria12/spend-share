@@ -38,6 +38,7 @@ export interface GroupFriend {
 }
 
 export interface Friend {
+    clerkId?: string | null | undefined;
     _id: string;
     username: string;
     email: string;

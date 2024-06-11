@@ -1,4 +1,3 @@
-// src/app/group/[...groupId]/page.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -17,7 +16,7 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ServerError } from "@/components/server-error";
 import { useAuth } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
+import NotFound from "@/app/not-found";
 
 const GroupId: React.FC = () => {
   const pathname = usePathname();
@@ -99,8 +98,10 @@ const GroupId: React.FC = () => {
     return <ServerError />;
   }
 
-  console.log(groupDetails?.friends);
-  
+  const isMember = groupDetails?.members.some(member => member.clerkId === userId);
+  if (!isMember) {
+    return <NotFound />;
+  }
 
   return (
     <>

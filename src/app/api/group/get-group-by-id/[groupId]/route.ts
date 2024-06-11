@@ -4,7 +4,6 @@ import { createError } from "@/utils/ApiError";
 import { createResponse } from "@/utils/ApiResponse";
 import { auth } from "@clerk/nextjs/server";
 import mongoose, { isValidObjectId } from "mongoose";
-import { Friendship } from "@/models/friendship.models";
 
 export async function GET(request: Request) {
     await connect();
@@ -157,6 +156,7 @@ export async function GET(request: Request) {
                         fullName: 1,
                         isAdmin: 1,
                         avatar: 1,
+                        clerkId: 1
                     },
                     totalMembers: 1,
                     isAdmin: 1,

@@ -107,8 +107,8 @@ export const FriendCard: FC<FriendCardProps> = ({ friend, method, remove = false
                         {dialogDescription}
                       </DrawerDescription>
                     </DrawerHeader>
-                    <div className="p-4">
-                      <Button variant="destructive" onClick={handleRemove}>
+                    <div className="p-4 w-full">
+                      <Button className='w-full' variant="destructive" onClick={handleRemove}>
                         {buttonText}
                       </Button>
                     </div>
