@@ -6,13 +6,14 @@ interface OweListProps {
   owes: Owe[];
   payOwe: (oweId: string) => void;
   isPayOweLoading: boolean;
+  payingOweId: string | null;
 }
 
-export const OweList: React.FC<OweListProps> = ({ owes, payOwe, isPayOweLoading }) => {
+export const OweList: React.FC<OweListProps> = ({ owes, payOwe, isPayOweLoading, payingOweId }) => {
   return (
     <div className="w-full">
       {owes.map((owe) => (
-        <ListingOweCard key={owe._id} owe={owe} payOwe={payOwe} isLoading={isPayOweLoading} />
+        <ListingOweCard key={owe._id} owe={owe} payOwe={payOwe} isLoading={isPayOweLoading && payingOweId === owe._id} />
       ))}
       {owes.length === 0 && (
         <p className='text-center text-2xl mt-3 font-bold tracking-wide sm:text-3xl md:text-3xl'>

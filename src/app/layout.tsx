@@ -43,6 +43,7 @@ export default function RootLayout({
         <ReactQueryClientProvider>
           <html className="scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800" lang="en">
             <body
+              suppressHydrationWarning
               className={cn(
                 "min-h-screen bg-background font-sans antialiased",
                 fontSans.variable

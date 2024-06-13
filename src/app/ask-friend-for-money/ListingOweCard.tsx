@@ -29,25 +29,25 @@ export const ListingOweCard: React.FC<ListingOweCardProps> = ({ owe, payOwe, isL
   return (
     <Card className="w-[90%] my-4 p-4 border rounded-lg shadow-lg bg-white dark:bg-gray-800 dark:border-gray-700">
       <div className='flex mb-2 items-center justify-around'>
-          <Avatar>
-              <Image 
-                src={owe.creditorInfo?.avatar || 'https://res.cloudinary.com/krishbackend/image/upload/v1712999375/kpvg81dod9pzjaxabbpe.png'} 
-                alt={owe.creditorInfo?.username || 'User Avatar'} 
-                width={50} 
-                height={50} 
-                className="rounded-full border-2 border-gray-300 dark:border-gray-600"
-              />
-            <AvatarFallback>
-              {owe.creditorInfo?.username?.slice(0, 2) ||
-                owe.creditorInfo?.fullName?.slice(0, 2)}
-            </AvatarFallback>
-          </Avatar>
-          <CardHeader>
-            <div className="flex-1 pr-4">
-              <CardTitle className="text-xl font-semibold text-gray-800 dark:text-white truncate">{owe.title}</CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-300 truncate">{owe.description}</CardDescription>
-            </div>
-          </CardHeader>
+        <Avatar>
+          <Image 
+            src={owe.creditorInfo?.avatar || 'https://res.cloudinary.com/krishbackend/image/upload/v1712999375/kpvg81dod9pzjaxabbpe.png'} 
+            alt={owe.creditorInfo?.username || 'User Avatar'} 
+            width={50} 
+            height={50} 
+            className="rounded-full border-2 border-gray-300 dark:border-gray-600"
+          />
+          <AvatarFallback>
+            {owe.creditorInfo?.username?.slice(0, 2) ||
+              owe.creditorInfo?.fullName?.slice(0, 2)}
+          </AvatarFallback>
+        </Avatar>
+        <CardHeader>
+          <div className="flex-1 pr-4">
+            <CardTitle className="text-xl font-semibold text-gray-800 dark:text-white truncate">{owe.title}</CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-300 truncate">{owe.description}</CardDescription>
+          </div>
+        </CardHeader>
       </div>
       <CardContent className="flex flex-col sm:flex-row sm:justify-between text-gray-600 dark:text-gray-300">
         <div className="flex flex-col sm:mr-4">

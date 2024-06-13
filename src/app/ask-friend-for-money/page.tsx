@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getOwesToUsers, getMoneyFromUser, payFriend, deleteOwe } from '@/actions/owe.actions';
 import { Owe } from '@/types';
@@ -22,6 +22,9 @@ const AskFriendPage: React.FC = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
+  const [payingOweId, setPayingOweId] = useState<string | null>(null);
+  const [deletingOweId, setDeletingOweId] = useState<string | null>(null);
+
   const { data: owes, isLoading, isError } = useQuery<Owe[]>({
     queryKey: ["owes"],
     queryFn: getOwesToUsers,
@@ -42,7 +45,8 @@ const AskFriendPage: React.FC = () => {
         description: "Money paid successfully",
         variant: "success",
         duration: 5000,
-      })
+      });
+      setPayingOweId(null);
     },
     onError: (error: any) => {
       toast({
@@ -50,7 +54,8 @@ const AskFriendPage: React.FC = () => {
         description: "Please Try Again Later!!",
         variant: "destructive",
         duration: 5000,
-      }) 
+      });
+      setPayingOweId(null);
     }
   });
 
@@ -64,7 +69,8 @@ const AskFriendPage: React.FC = () => {
         description: "You've successfully deleted this owe",
         variant: "success",
         duration: 5000,
-      })
+      });
+      setDeletingOweId(null);
     },
     onError: (error: any) => {
       toast({
@@ -72,7 +78,8 @@ const AskFriendPage: React.FC = () => {
         description: "Please Try Again Later!!",
         variant: "destructive",
         duration: 5000,
-      })
+      });
+      setDeletingOweId(null);
     }
   });
 
@@ -93,6 +100,16 @@ const AskFriendPage: React.FC = () => {
   
   const pendingMoneyOwed = moneyOwed && moneyOwed?.length > 0 && moneyOwed.filter((owe) => !owe.paid) || [];
   const confirmedMoneyOwed = moneyOwed && moneyOwed?.length > 0 && moneyOwed.filter((owe) => owe.paid) || [];
+
+  const handlePayOwe = (oweId: string) => {
+    setPayingOweId(oweId);
+    payOweMutation.mutate(oweId);
+  };
+
+  const handleDeleteOwe = (oweId: string) => {
+    setDeletingOweId(oweId);
+    deleteOweMutation.mutate(oweId);
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -119,10 +136,10 @@ const AskFriendPage: React.FC = () => {
                 <TabsTrigger value="confirmedOwes">I Paid</TabsTrigger>
               </TabsList>
               <TabsContent value="pendingOwes">
-                <OweList owes={pendingOwes} payOwe={payOweMutation.mutate} isPayOweLoading={payOweMutation.isPending} />
+                <OweList owes={pendingOwes} payOwe={handlePayOwe} isPayOweLoading={payOweMutation.isPending} payingOweId={payingOweId} />
               </TabsContent>
               <TabsContent value="confirmedOwes">
-                <OweList owes={confirmedOwes} payOwe={payOweMutation.mutate} isPayOweLoading={payOweMutation.isPending} />
+                <OweList owes={confirmedOwes} payOwe={handlePayOwe} isPayOweLoading={payOweMutation.isPending} payingOweId={payingOweId} />
               </TabsContent>
             </Tabs>
           </div>
@@ -137,10 +154,10 @@ const AskFriendPage: React.FC = () => {
                 <TabsTrigger value="confirmedMoneyOwed">Paid Ones</TabsTrigger>
               </TabsList>
               <TabsContent value="pendingMoneyOwed">
-                <MoneyOwedList moneyOwed={pendingMoneyOwed} deleteOwe={deleteOweMutation.mutate} isDeleteOweLoading={deleteOweMutation.isPending} />
+                <MoneyOwedList moneyOwed={pendingMoneyOwed} deleteOwe={handleDeleteOwe} isDeleteOweLoading={deleteOweMutation.isPending} deletingOweId={deletingOweId} />
               </TabsContent>
               <TabsContent value="confirmedMoneyOwed">
-                <MoneyOwedList moneyOwed={confirmedMoneyOwed} deleteOwe={deleteOweMutation.mutate} isDeleteOweLoading={deleteOweMutation.isPending} />
+                <MoneyOwedList moneyOwed={confirmedMoneyOwed} deleteOwe={handleDeleteOwe} isDeleteOweLoading={deleteOweMutation.isPending} deletingOweId={deletingOweId} />
               </TabsContent>
             </Tabs>
           </div>
