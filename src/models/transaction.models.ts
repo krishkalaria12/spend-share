@@ -34,7 +34,6 @@ const TransactionSchema: Schema<ITransaction> = new Schema({
     userId: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: [true, "User for the transaction is required"]
     },
     groupId: {
         type: Schema.Types.ObjectId,

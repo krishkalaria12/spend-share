@@ -1,7 +1,12 @@
+import { ExpenseCategory } from '@/types';
 import axios from 'axios';
 
-export const getAllExpensesByCategory = async () => {
-  const response = await axios.get('/api/expense/get-expenses-of-user-by-category');
+export const getAllExpensesByCategory = async (page: number, limit: number): Promise<{
+  expenses: ExpenseCategory[],
+  totalPages: number,
+  currentPage: number,
+}> => {
+  const response = await axios.get(`/api/expense/get-expenses-of-user-by-category?page=${page}&limit=${limit}`);
   return response.data.data;
 };
 

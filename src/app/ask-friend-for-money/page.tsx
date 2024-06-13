@@ -16,9 +16,11 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { useToast } from '@/components/ui/use-toast';
 
 const AskFriendPage: React.FC = () => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: owes, isLoading, isError } = useQuery<Owe[]>({
     queryKey: ["owes"],
@@ -35,7 +37,21 @@ const AskFriendPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["owes"] });
       queryClient.invalidateQueries({ queryKey: ["moneyOwed"] });
+      toast({
+        title: "Successfully paid friend",
+        description: "Money paid successfully",
+        variant: "success",
+        duration: 5000,
+      })
     },
+    onError: (error: any) => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "Please Try Again Later!!",
+        variant: "destructive",
+        duration: 5000,
+      }) 
+    }
   });
 
   const deleteOweMutation = useMutation({
@@ -43,7 +59,21 @@ const AskFriendPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["owes"] });
       queryClient.invalidateQueries({ queryKey: ["moneyOwed"] });
+      toast({
+        title: "Successfully deleted owe",
+        description: "You've successfully deleted this owe",
+        variant: "success",
+        duration: 5000,
+      })
     },
+    onError: (error: any) => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "Please Try Again Later!!",
+        variant: "destructive",
+        duration: 5000,
+      })
+    }
   });
 
   if (isLoading || isLoadingMoneyOwed) {
@@ -58,18 +88,11 @@ const AskFriendPage: React.FC = () => {
     return <ServerError />;
   }
 
-  const pendingOwes = owes && owes.filter((owe) => !owe.paid) || [];
-  const confirmedOwes = owes && owes.filter((owe) => owe.paid) || [];
+  const pendingOwes = owes && owes?.length > 0 && owes.filter((owe) => !owe.paid) || [];
+  const confirmedOwes = owes && owes?.length > 0 && owes.filter((owe) => owe.paid) || [];
   
-  const pendingMoneyOwed = moneyOwed && moneyOwed.filter((owe) => !owe.paid) || [];
-  const confirmedMoneyOwed = moneyOwed && moneyOwed.filter((owe) => owe.paid) || [];
-
-  console.log(owes);
-  console.log(moneyOwed);
-  console.log(pendingOwes);
-  console.log(confirmedOwes);
-  console.log(pendingMoneyOwed);
-  console.log(confirmedMoneyOwed);
+  const pendingMoneyOwed = moneyOwed && moneyOwed?.length > 0 && moneyOwed.filter((owe) => !owe.paid) || [];
+  const confirmedMoneyOwed = moneyOwed && moneyOwed?.length > 0 && moneyOwed.filter((owe) => owe.paid) || [];
 
   return (
     <div className="flex min-h-screen w-full flex-col">

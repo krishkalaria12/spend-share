@@ -60,6 +60,7 @@ const AskMoneyFromFriend: React.FC = () => {
     mutationFn: ({ friendId, data }: { friendId: string; data: OweCreation }) => askMoneyFromFriend({ friendId, data }),
     onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["owes"] });
+        queryClient.invalidateQueries({ queryKey: ["moneyOwed"] });
         toast({
           title: "Successfully Requested Money",
           description: "Money requested successfully",

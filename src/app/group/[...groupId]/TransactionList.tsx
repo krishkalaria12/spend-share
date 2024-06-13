@@ -1,4 +1,3 @@
-// src/components/group/TransactionList.tsx
 import React from 'react';
 import TransactionCard from '@/components/Transactions/TransactionCard';
 import RequestMoneyFromGroup from './RequestMoneyFromGroup';

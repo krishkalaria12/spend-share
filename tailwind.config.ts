@@ -111,7 +111,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"),require('daisyui'),addVariablesForColors,
+  plugins: [require('tailwind-scrollbar'),require("tailwindcss-animate"),require('daisyui'),addVariablesForColors,
     function ({ matchUtilities, theme }: any) {
       matchUtilities(
         {

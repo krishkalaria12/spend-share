@@ -16,8 +16,8 @@ export const getGroupById = async (groupId: string) => {
   return response.data.data;
 };
 
-export const getGroupTransactions = async (groupId: string) => {
-  const response = await axios.get(`/api/group/group-transactions/${groupId}`);
+export const getGroupTransactions = async (groupId: string, page: number = 1, limit: number = 10) => {
+  const response = await axios.get(`/api/group/group-transactions/${groupId}?page=${page}&limit=${limit}`);
   return response.data.data;
 };
 

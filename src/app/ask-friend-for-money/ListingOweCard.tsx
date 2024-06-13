@@ -51,7 +51,7 @@ export const ListingOweCard: React.FC<ListingOweCardProps> = ({ owe, payOwe, isL
       </div>
       <CardContent className="flex flex-col sm:flex-row sm:justify-between text-gray-600 dark:text-gray-300">
         <div className="flex flex-col sm:mr-4">
-          <p className="text-lg font-semibold">Amount: <span className="text-blue-500 dark:text-blue-300">${owe.amount}</span></p>
+          <p className="text-lg font-semibold">Amount: <span className="text-blue-500 dark:text-blue-300">₹{owe.amount}</span></p>
           <p className="text-lg font-semibold">Category: <span className="text-blue-500 dark:text-blue-300">{owe.category}</span></p>
           <p className="text-lg font-semibold">Debtor: <span className="text-blue-500 dark:text-blue-300">{owe.creditorInfo?.username || owe.creditorInfo?.fullName}</span></p>
         </div>

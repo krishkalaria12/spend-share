@@ -25,10 +25,17 @@ export interface ExpenseComparison {
     overallExpenseAmount: number;
 }
 
-export interface ExpenseCategory {
+export type ExpenseCategory = {
     category: string;
-    expenses: Expense[];
-}
+    totalExpense: number;
+    expenses: {
+        _id: string;
+        title: string;
+        amount: number;
+        description: string;
+        createdAt: string;
+    }[];
+};
 
 export interface GroupFriend {
     _id: string;

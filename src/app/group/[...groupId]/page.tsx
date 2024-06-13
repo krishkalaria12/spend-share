@@ -17,26 +17,41 @@ import { useToast } from "@/components/ui/use-toast";
 import { ServerError } from "@/components/server-error";
 import { useAuth } from "@clerk/nextjs";
 import NotFound from "@/app/not-found";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const GroupId: React.FC = () => {
   const pathname = usePathname();
   const groupId = pathname.split("/")[2];
 
-  const {toast} = useToast();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const {userId} = useAuth();
-  
-  const [error, setError] = useState("");
+  const { userId } = useAuth();
+
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
   const { data: groupDetails, isLoading: loadingGroupDetails, isError: errorGroupDetails } = useQuery<Group>({
     queryKey: ["group", groupId],
     queryFn: () => getGroupById(groupId),
   });
 
-  const { data: groupTransactions, isLoading: loadingGroupTransactions, isError: errorGroupTransactions } = useQuery<Transaction[]>({
-    queryKey: ["groupTransactions", groupId],
-    queryFn: () => getGroupTransactions(groupId),
+  const { data: groupTransactions, isLoading: loadingGroupTransactions, isError: errorGroupTransactions, isFetching: fetchingGroupTransactions, isPlaceholderData } = useQuery<{
+    transactions: Transaction[];
+    totalPages: number;
+    currentPage: number;
+  }>({
+    queryKey: ["groupTransactions", groupId, page],
+    queryFn: () => getGroupTransactions(groupId, page, limit),
+    // keepPreviousData: true,
+    placeholderData: (previous) => previous,
   });
 
   const removeMemberMutation = useMutation({
@@ -82,7 +97,7 @@ const GroupId: React.FC = () => {
       })
     }
   });
-  
+
   const handleRemoveFromGroup = (memberId: string) => removeMemberMutation.mutate({ groupId, memberId });
   const handleMakeAdminOfGroup = (memberId: string) => changeAdminMutation.mutate({ groupId, memberId });
 
@@ -103,10 +118,16 @@ const GroupId: React.FC = () => {
     return <NotFound />;
   }
 
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= (groupTransactions?.totalPages || 1)) {
+      setPage(newPage);
+    }
+  };
+
   return (
     <>
       <GroupDetails
-        error={error}
+        error=""
         groupId={groupId}
         addMembers={groupDetails?.friends || []}
         handleRemoveFromGroup={handleRemoveFromGroup}
@@ -114,11 +135,36 @@ const GroupId: React.FC = () => {
         group={groupDetails as Group}
       />
       <TransactionList
-        error={error}
+        error=""
         groupId={groupId}
         currentUserId={userId}
-        transactions={groupTransactions || []}
+        transactions={groupTransactions?.transactions || []}
       />
+      {groupTransactions?.totalPages && groupTransactions.totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious onClick={() => handlePageChange(page - 1)} />
+            </PaginationItem>
+            {Array.from({ length: groupTransactions.totalPages }).map((_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  isActive={page === index + 1}
+                  onClick={() => handlePageChange(index + 1)}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext onClick={() => handlePageChange(page + 1)} />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
+      {fetchingGroupTransactions && (
+        <Loader2 className="h-12 w-12 animate-spin" />
+      )}
     </>
   );
 };

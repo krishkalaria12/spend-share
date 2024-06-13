@@ -14,23 +14,24 @@ interface ListExpenseProps {
   expenses: ExpenseCategory[];
 }
 
-const ListExpense: React.FC<ListExpenseProps> = ({ expenses }) => {
-
+export const ListExpense: React.FC<ListExpenseProps> = ({ expenses }) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
   const [selectedCategory, setSelectedCategory] = useState<string>('Food');
+  const [deletingExpenseId, setDeletingExpenseId] = useState<string | null>(null);
 
   const mutation = useMutation({
     mutationFn: deleteExpense,
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['expenses']});
-      queryClient.invalidateQueries({queryKey: ['expense-comparison']});
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-comparison'] });
       toast({
         variant: "success",
         title: "Expense deleted successfully",
         description: "Thank you for your expense!",
-      })
+      });
+      setDeletingExpenseId(null);
     },
     onError: (error: any) => {
       console.log(error);
@@ -39,10 +40,12 @@ const ListExpense: React.FC<ListExpenseProps> = ({ expenses }) => {
         title: 'Uh oh! Something went wrong.',
         description: "Please Try Again Later!!",
       });
+      setDeletingExpenseId(null);
     }
   });
 
   const handleDeleteExpense = (expenseId: string) => {
+    setDeletingExpenseId(expenseId);
     mutation.mutate(expenseId);
   };
 
@@ -57,10 +60,10 @@ const ListExpense: React.FC<ListExpenseProps> = ({ expenses }) => {
   }, [expenses]);
 
   const categoryExpenses = expenses?.find(exp => exp.category === selectedCategory)?.expenses || [];
-  
+
   return (
     <div className="overflow-x-auto">
-      {categoryExpenses.length==0 ? (
+      {categoryExpenses.length === 0 ? (
         <p className="text-center text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">No expenses Found! Add your expense now to get started.</p>
       ) : (
         <Tabs value={selectedCategory}>
@@ -80,7 +83,7 @@ const ListExpense: React.FC<ListExpenseProps> = ({ expenses }) => {
             {categoryExpenses.length === 0 ? (
               <div className="text-center py-4">No expenses available for this category.</div>
             ) : (
-              <Card x-chunk="dashboard-05-chunk-3">
+              <Card>
                 <CardHeader className="px-7">
                   <CardTitle>{selectedCategory} Expenses</CardTitle>
                   <CardDescription>Total: ₹{categoryExpenses.reduce((acc, curr) => acc + curr.amount, 0)}</CardDescription>
@@ -105,18 +108,18 @@ const ListExpense: React.FC<ListExpenseProps> = ({ expenses }) => {
                           <TableCell>{new Date(item.createdAt).toLocaleDateString()}</TableCell>
                           <TableCell>
                             <Button
-                              disabled={mutation.isPending}
+                              disabled={deletingExpenseId === item._id}
                               onClick={() => handleDeleteExpense(item._id)}
                               variant="destructive"
                             >
-                              {mutation.isPending ? (
+                              {deletingExpenseId === item._id ? (
                                 <span className="mr-2">
                                   <Loader2 size={16} className="animate-spin" />
                                 </span>
                               ) : (
                                 "Delete"
                               )}
-                              {mutation.isPending && "Deleting..."}
+                              {deletingExpenseId === item._id && "Deleting..."}
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -132,5 +135,3 @@ const ListExpense: React.FC<ListExpenseProps> = ({ expenses }) => {
     </div>
   );
 };
-
-export default ListExpense;

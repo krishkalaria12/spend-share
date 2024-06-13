@@ -65,7 +65,7 @@ export const CreateFeedback: FC<CreateFeedbackProps> = ({
             {isSubmitting ? (
               <div className="flex items-center space-x-2">
                 <Loader2 className="animate-spin" size={16} />
-                <span>Loading</span>
+                <span>Submitting..</span>
               </div>
             ) : (
               'Submit'

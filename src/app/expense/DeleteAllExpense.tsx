@@ -64,7 +64,7 @@ export function DeleteAllExpense() {
           {!isDrawer && <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>
           </DrawerClose>}
-          <Button onClick={handleDeleteAllExpenses} type="submit" disabled={mutation.isPending}>
+          <Button variant={"destructive"} onClick={handleDeleteAllExpenses} type="submit" disabled={mutation.isPending}>
             {mutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             {mutation.isPending ? "Deleting..." : "Delete All Expenses"}
           </Button>

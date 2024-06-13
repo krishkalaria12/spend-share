@@ -41,7 +41,7 @@ export default function RootLayout({
     >
       <ViewTransitions>
         <ReactQueryClientProvider>
-          <html lang="en">
+          <html className="scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800" lang="en">
             <body
               className={cn(
                 "min-h-screen bg-background font-sans antialiased",

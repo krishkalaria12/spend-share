@@ -60,7 +60,6 @@ export async function GET(request: Request) {
 
     // Execute the aggregation pipeline
     const owesToUser = await Owe.aggregate(pipeline);
-    console.log(owesToUser);
     
     if (!owesToUser) {
       return Response.json(createError("No owes found", 404, false));

@@ -9,18 +9,34 @@ import { Feedback as FeedbackType } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@clerk/nextjs';
 import { ServerError } from '@/components/server-error';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 const FeedbackPage = () => {
   const [message, setMessage] = useState('');
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
   const { userId } = useAuth();
   
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const { data, isLoading, isError } = useQuery<FeedbackType[], Error>({
-    queryKey: ['feedbacks'],
-    queryFn: getFeedback,
+  const { data, isLoading, isError, isFetching, isPlaceholderData } = useQuery<{
+    feedbacks: FeedbackType[],
+    totalPages: number,
+    currentPage: number,
+  }, Error>({
+    queryKey: ['feedbacks', page],
+    queryFn: () => getFeedback(page, limit),
+    placeholderData: (previousData) => previousData,
   });
 
   const createFeedbackMutation = useMutation({
@@ -93,6 +109,12 @@ const FeedbackPage = () => {
     setMessage(event.target.value);
   };
 
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= (data?.totalPages || 1)) {
+      setPage(newPage);
+    }
+  };
+
   const toggleLike = (id: string) => {
     likeFeedbackMutation.mutate(id);
   };
@@ -116,7 +138,39 @@ const FeedbackPage = () => {
         isSubmitting={createFeedbackMutation.isPending}
         isLoading={isLoading}
       />
-      <ListFeedback toggleDelete={toggleDelete} clerkId={userId} isLoading={isLoading} data={data || []} toggleLike={toggleLike} />
+      <ListFeedback 
+        toggleDelete={toggleDelete} 
+        clerkId={userId} 
+        isLoading={isLoading} 
+        data={data?.feedbacks || []} 
+        toggleLike={toggleLike} 
+      />
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem className='cursor-pointer'>
+            <PaginationPrevious onClick={() => handlePageChange(page - 1)} />
+          </PaginationItem>
+          {Array.from({ length: data?.totalPages || 1 }, (_, index) => (
+            <PaginationItem className='cursor-pointer' key={index}>
+              <PaginationLink
+                isActive={page === index + 1} 
+                onClick={() => handlePageChange(index + 1)}
+              >
+                {index + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          {data?.totalPages && data.totalPages > 3 && (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+          <PaginationItem className='cursor-pointer'>
+            <PaginationNext onClick={() => handlePageChange(page + 1)} />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+      {isFetching ? <span> Loading...</span> : null}
     </div>
   );
 };
