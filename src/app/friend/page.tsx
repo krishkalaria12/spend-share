@@ -28,7 +28,7 @@ const FriendPage = () => {
 
   const sendFriendRequestMutation = useMutation({
     mutationFn: sendFriendRequest,
-    onSuccess: (newRequest) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['friends'] });
       toast({
         title: 'Successfully sent friend request',
@@ -37,7 +37,7 @@ const FriendPage = () => {
         duration: 5000,
       });
     },
-    onError: (error: any) => {
+    onError: () => {
       toast({
         title: 'Uh oh! Something went wrong.',
         description: 'Please Try Again Later!!',
@@ -58,7 +58,7 @@ const FriendPage = () => {
         duration: 5000,
       });
     },
-    onError: (error: any) => {
+    onError: () => {
       toast({
         title: 'Uh oh! Something went wrong.',
         description: 'Please Try Again Later!!',
@@ -79,7 +79,7 @@ const FriendPage = () => {
         duration: 5000,
       });
     },
-    onError: (error: any) => {
+    onError: () => {
       toast({
         title: 'Uh oh! Something went wrong.',
         description: 'Please Try Again Later!!',
@@ -105,12 +105,12 @@ const FriendPage = () => {
     sendFriendRequestMutation.mutate(id);
   };
 
-  const handleAcceptFriendRequest = (id: string) => {
-    acceptFriendRequestMutation.mutate(id);
+  const handleAcceptFriendRequest = (friendshipId: string) => {
+    acceptFriendRequestMutation.mutate(friendshipId);
   };
 
-  const handleRemoveFriendRequest = (id: string) => {
-    removeFriendRequestMutation.mutate(id);
+  const handleRemoveFriendRequest = (friendshipId: string) => {
+    removeFriendRequestMutation.mutate(friendshipId);
   };
 
   if (isError) {

@@ -35,14 +35,14 @@ export const FriendCard: FC<FriendCardProps> = ({ friend, method, remove = false
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
   const handleRemove = () => {
-    method(friend._id);
+    method(friend.friendshipId ?? friend._id);
     setDialogOpen(false);
   };
 
   const avatarUrl = friend.avatar || "https://res.cloudinary.com/krishbackend/image/upload/v1712999375/kpvg81dod9pzjaxabbpe.png";
   const buttonText = yourRequestStatus ? 'Cancel Request' : 'Remove';
   const dialogTitle = yourRequestStatus ? 'Cancel Friend Request' : 'Remove Friend';
-  const dialogDescription = `Are you sure you want to ${yourRequestStatus? 'cancel this friend request' : 'remove this friend'}? This action cannot be undone.`;
+  const dialogDescription = `Are you sure you want to ${yourRequestStatus ? 'cancel this friend request' : 'remove this friend'}? This action cannot be undone.`;
 
   return (
     <div className="flex flex-col sm:flex-row max-w-3xl w-full mx-auto mt-4 bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
@@ -108,7 +108,7 @@ export const FriendCard: FC<FriendCardProps> = ({ friend, method, remove = false
                       </DrawerDescription>
                     </DrawerHeader>
                     <div className="p-4 w-full">
-                      <Button className='w-full' variant="destructive" onClick={handleRemove}>
+                      <Button className="w-full" variant="destructive" onClick={handleRemove}>
                         {buttonText}
                       </Button>
                     </div>

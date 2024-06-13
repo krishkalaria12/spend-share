@@ -29,7 +29,7 @@ export const ListFriend: FC<ListFriendProps> = ({ friends, remove, method, isLoa
             friends.map((friend: any) => (
               <FriendCard
                 key={friend._id}
-                friend={requestTab ? { ...friend.user, friendshipId: friend._id } : { ...friend, friendshipId: friend._id }}
+                friend={requestTab ? { ...friend.user, friendshipId: friend._id } : { ...friend, friendshipId: friend.friendshipId }}
                 method={method}
                 remove={remove}
                 yourRequestStatus={yourRequestStatus}

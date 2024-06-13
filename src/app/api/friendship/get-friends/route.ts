@@ -67,7 +67,16 @@ export async function GET(request: Request) {
                             },
                         },
                         { $unwind: '$friendDetails' },
-                        { $replaceRoot: { newRoot: '$friendDetails' } },
+                        {
+                            $project: {
+                                _id: '$friendDetails._id',
+                                username: '$friendDetails.username',
+                                email: '$friendDetails.email',
+                                fullName: '$friendDetails.fullName',
+                                avatar: '$friendDetails.avatar',
+                                friendshipId: '$_id'
+                            }
+                        }
                     ],
                     pendingRequests: [
                         {
@@ -135,7 +144,14 @@ export async function GET(request: Request) {
         ];
 
         const results = await Friendship.aggregate(aggregationPipeline);
-        const friends = results[0].friends;
+        const friends = results[0].friends.map((friend: { _id: any; username: any; email: any; fullName: any; avatar: any; friendshipId: { toString: () => any; }; }) => ({
+            _id: friend._id,
+            username: friend.username,
+            email: friend.email,
+            fullName: friend.fullName,
+            avatar: friend.avatar,
+            friendshipId: friend.friendshipId.toString()
+        }));
         const pendingRequests = results[0].pendingRequests;
         const yourRequests = results[0].yourRequests;
 

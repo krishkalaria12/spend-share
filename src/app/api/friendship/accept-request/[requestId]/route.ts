@@ -26,9 +26,12 @@ export async function POST(request: Request) {
         if (!mongoose.isValidObjectId(requestId)) {
             throw createError("Invalid request ID", 400, false);
         }
-
-        const friendRequest = await Friendship.findById(requestId);
-
+        
+        const friendRequest = await Friendship.findOne({
+            user: requestId,
+            friend: mongoId
+        });
+        
         if (!friendRequest || friendRequest.status !== 'pending') {
             throw createError("Friend request not found or already processed", 404, false);
         }

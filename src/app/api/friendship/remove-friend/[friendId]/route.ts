@@ -10,10 +10,10 @@ export async function DELETE(request: Request) {
   await connect();
 
   try {
-    const friendId = request.url.split("remove-friend/")[1];
+    const friendshipId = request.url.split("remove-friend/")[1];
 
-    if (!friendId) {
-      throw createError("Invalid friend ID", 400, false);
+    if (!friendshipId) {
+      throw createError("Invalid friendship ID", 400, false);
     }
 
     const { has, sessionClaims } = auth();
@@ -23,27 +23,24 @@ export async function DELETE(request: Request) {
       throw createError("Unauthorized", 401, false);
     }
 
-    if (!isValidObjectId(friendId)) {
-      throw createError("Invalid friend ID", 400, false);
+    if (!isValidObjectId(friendshipId)) {
+      throw createError("Invalid friendship ID", 400, false);
     }
 
-    const friendship = await Friendship.findOne({
-      user: mongoId,
-      friend: friendId
-    });
+    const friendship = await Friendship.findById(friendshipId);
 
     if (!friendship) {
       throw createError("Friendship not found", 404, false);
     }
 
-    const deletedFriendship = await Friendship.findByIdAndDelete(friendship._id);
+    const deletedFriendship = await Friendship.findByIdAndDelete(friendshipId);
 
     if (!deletedFriendship) {
       throw createError("Failed to delete friendship", 400, false);
     }
 
-    await User.findByIdAndUpdate(mongoId, { $pull: { friends: friendId } });
-    await User.findByIdAndUpdate(friendId, { $pull: { friends: mongoId } });
+    await User.findByIdAndUpdate(mongoId, { $pull: { friends: friendship.friend } });
+    await User.findByIdAndUpdate(friendship.friend, { $pull: { friends: mongoId } });
 
     return new Response(
       JSON.stringify(createResponse("Friend deleted successfully", 200, true, deletedFriendship)),

@@ -128,7 +128,8 @@ const FeedbackPage = () => {
       <ServerError />
     )
   }
-
+  console.log(data);
+  
   return (
     <div className="grid py-6 items-start gap-4 px-4 lg:items-center lg:px-0">
       <CreateFeedback
@@ -145,32 +146,34 @@ const FeedbackPage = () => {
         data={data?.feedbacks || []} 
         toggleLike={toggleLike} 
       />
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem className='cursor-pointer'>
-            <PaginationPrevious onClick={() => handlePageChange(page - 1)} />
-          </PaginationItem>
-          {Array.from({ length: data?.totalPages || 1 }, (_, index) => (
-            <PaginationItem className='cursor-pointer' key={index}>
-              <PaginationLink
-                isActive={page === index + 1} 
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </PaginationLink>
+      {data?.feedbacks && data?.feedbacks.length > 0 && data?.totalPages && data.totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem className='cursor-pointer'>
+              <PaginationPrevious onClick={() => handlePageChange(page - 1)} />
             </PaginationItem>
-          ))}
-          {data?.totalPages && data.totalPages > 3 && (
-            <PaginationItem>
-              <PaginationEllipsis />
+            {Array.from({ length: data.totalPages }, (_, index) => (
+              <PaginationItem className='cursor-pointer' key={index + 1}>
+                <PaginationLink
+                  isActive={page === index + 1} 
+                  onClick={() => handlePageChange(index + 1)}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            {data.totalPages > 3 && (
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+            )}
+            <PaginationItem className='cursor-pointer'>
+              <PaginationNext onClick={() => handlePageChange(page + 1)} />
             </PaginationItem>
-          )}
-          <PaginationItem className='cursor-pointer'>
-            <PaginationNext onClick={() => handlePageChange(page + 1)} />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
-      {isFetching ? <span> Loading...</span> : null}
+          </PaginationContent>
+        </Pagination>
+      )}
+      {data?.feedbacks && data?.feedbacks.length > 0 && data?.totalPages && data.totalPages > 1 &&isFetching && <span> Loading...</span>}
     </div>
   );
 };
