@@ -82,7 +82,7 @@ export default function Expense() {
                 No expenses Found! Add your expense now to get started.
               </p>
             )}
-            {expensesData?.totalPages && expensesData?.totalPages > 1 && (
+            {expensesData && expensesData.expenses.length > 0 && expensesData?.totalPages && expensesData?.totalPages > 1 && (
               <Pagination>
                 <PaginationContent>
                   <PaginationItem className='cursor-pointer'>
