@@ -5,7 +5,7 @@ const testimonials = [
   {
     name: 'Ethan Pollack',
     description:
-      "I've been using Money Splitter for a few months now and I'm really impressed with the results. It streamlines expense tracking efficiently and the interface is user-friendly.",
+      "I've been using Spend Share for a few months now and I'm really impressed with the results. It streamlines expense tracking efficiently and the interface is user-friendly.",
     profession: 'Financial Analyst',
     image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde',
   },
@@ -13,35 +13,35 @@ const testimonials = [
     name: 'Aiko',
     profession: 'Group Expense Manager',
     description:
-      "Money Splitter is a great tool for managing group expenses. It's intuitive and simplifies expense tracking effectively. I've been using it for a while now and I'm really happy with the results.",
+      "Spend Share is a great tool for managing group expenses. It's intuitive and simplifies expense tracking effectively. I've been using it for a while now and I'm really happy with the results.",
     image: 'https://images.unsplash.com/photo-1601455763557-db1bea8a9a5a',
   },
   {
     name: 'Alena Zhukova',
     profession: 'Expense Tracking Specialist',
     description:
-      "Money Splitter is the perfect tool for streamlining group expense tracking. It's easy to use and efficiently manages shared costs. I've been using it for a while now and I'm really happy with the results.",
+      "Spend Share is the perfect tool for streamlining group expense tracking. It's easy to use and efficiently manages shared costs. I've been using it for a while now and I'm really happy with the results.",
     image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
   },
   {
     name: 'Lisa Kemp',
     profession: 'Expense Management Consultant',
     description:
-      "Money Splitter is a great tool for managing group expenses. It simplifies expense tracking effectively and the interface is user-friendly. I've been using it for a while now and I'm really happy with the results.",
+      "Spend Share is a great tool for managing group expenses. It simplifies expense tracking effectively and the interface is user-friendly. I've been using it for a while now and I'm really happy with the results.",
     image: 'https://images.unsplash.com/photo-1569913486515-b74bf7751574',
   },
   {
     name: 'Saud',
     profession: 'Group Finance Coordinator',
     description:
-      "Money Splitter is a great tool for managing group expenses. It streamlines expense tracking efficiently and I'm really happy with the results.",
+      "Spend Share is a great tool for managing group expenses. It streamlines expense tracking efficiently and I'm really happy with the results.",
     image: 'https://images.unsplash.com/photo-1645830166230-187caf791b90',
   },
   {
     name: 'Paula Smith',
     profession: 'Expense Tracking Specialist',
     description:
-      "Money Splitter is a great tool for managing group expenses. It simplifies expense tracking effectively and I'm really happy with the results.",
+      "Spend Share is a great tool for managing group expenses. It simplifies expense tracking effectively and I'm really happy with the results.",
       image: 'https://images.unsplash.com/photo-1586297135537-94bc9ba060aa',
   },
 ]
@@ -92,7 +92,7 @@ const Testimonals = () => {
   return (
     <div className="flex flex-col items-center justify-center gap-5 py-12">
       <h1 className="mb-1 max-w-2xl text-center text-2xl font-semibold tracking-tighter text-gray-900 md:text-4xl dark:text-gray-100">
-        Why people love Money Splitter
+        Why people love Spend Share
       </h1>
       <p className="max-w-2xl text-center text-sm font-light text-gray-600 md:text-base dark:text-gray-400">
         SyntaxUI is loved by the community and is used by many people. It is

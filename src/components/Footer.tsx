@@ -31,7 +31,7 @@ const Footer = () => {
               <div className="flex flex-col">
                 <h1 className="text-black dark:text-white font-sans">
                   {" "}
-                  {/* */}Money Splitter
+                  {/* */}Spend Share
                 </h1>
               </div>
             </Link>
@@ -43,7 +43,7 @@ const Footer = () => {
               className="dark:text-sky-500 text-neutral-600 font-medium"
               href="https://aceternity.com"
             >
-              Money Splitter
+              Spend Share
             </a>
           </div>
           <div className="mt-2">

@@ -49,7 +49,7 @@ export const Navbar = () => {
         </SheetTrigger>
         <SheetContent side="left">
           <Link href="/">
-            <Image width={6} height={6} src={"/money-splitter.webp"} alt="Logo" className="h-6 w-6" priority={true} />
+            <Image width={6} height={6} src={"/logo.png"} alt="Logo" className="h-6 w-6" priority={true} />
             <span className="sr-only">Company Logo</span>
           </Link>
           <div className="grid gap-2 py-6">
@@ -64,7 +64,7 @@ export const Navbar = () => {
       </Sheet>
       <ModeToggle className="md:hidden" />
       <Link className="mr-6 hidden md:flex" href="/">
-        <Image width={6} height={6} src={"/money-splitter.webp"} alt="Logo" className="h-6 w-6" priority={true} />
+        <Image width={6} height={6} src={"/logo.png"} alt="Logo" className="h-6 w-6" priority={true} />
         <span className="sr-only">Company Logo</span>
       </Link>
       <NavigationMenu className="hidden justify-between items-center max-w-full md:flex">

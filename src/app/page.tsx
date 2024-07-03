@@ -24,7 +24,7 @@ export default function Home() {
               </h1>
           </div>
           <p className="mt-4 text-sm lg:text-lg text-muted-foreground lg:px-0 px-6 lg:max-w-lg text-center w-full mx-auto">
-          Introducing Money Splitter: Effortlessly track group expenses with secure access, intuitive navigation, and detailed reports.
+          Introducing Spend Share: Effortlessly track group expenses with secure access, intuitive navigation, and detailed reports.
           </p>
         </div>
         <div className="py-4 mt-20">

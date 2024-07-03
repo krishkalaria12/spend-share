@@ -221,7 +221,7 @@ export function BentoGridDemo() {
             className="rounded-full h-10 w-10"
           />
           <p className="sm:text-sm text-xs text-center font-semibold text-neutral-500 mt-4">
-            Use Money Splitter to keep track of your expenses.
+            Use Spend Share to keep track of your expenses.
           </p>
           <p className="border border-green-500 bg-green-100 dark:bg-green-900/20 text-green-600 text-xs rounded-full px-2 py-0.5 mt-4">
             Sensible
@@ -300,7 +300,7 @@ export function BentoGridDemo() {
           variants={variantsSecond}
           className="flex flex-row rounded-full border border-neutral-100 dark:border-white/[0.2] p-2 items-center justify-end space-x-2 w-3/4 ml-auto bg-white dark:bg-black"
         >
-          <p className="text-xs text-neutral-500">Use Money Splitter.</p>
+          <p className="text-xs text-neutral-500">Use Spend Share.</p>
           <div className="h-6 w-6 rounded-full bg-gradient-to-r from-pink-500 to-violet-500 flex-shrink-0" />
         </motion.div>
       </motion.div>

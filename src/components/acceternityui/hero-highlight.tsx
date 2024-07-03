@@ -113,7 +113,7 @@ export function HeroHighlightText() {
         }}
         className="text-2xl px-4 md:text-4xl lg:text-5xl font-bold text-neutral-700 dark:text-white max-w-4xl leading-relaxed lg:leading-snug text-center mx-auto "
       >
-        Effortlessly track group expenses with Money Splitter, streamlining expense tracking efficiently and {" "}
+        Effortlessly track group expenses with Spend Share, streamlining expense tracking efficiently and {" "}
         <Highlight className="text-black dark:text-white">
         simplifying shared cost management.
         </Highlight>
