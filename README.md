@@ -1,6 +1,6 @@
-# The Money Splitter 💰🤑
+# Spend Share 💰🤑
 
-The Money Splitter is designed to streamline expense tracking within groups. It enables users to create groups, record transactions, and manage shared costs efficiently. Key features include user authentication for secure access, group creation and management, transaction recording with detailed descriptions, and comprehensive expense reports. With intuitive navigation and robust functionality, the Group Expenses Tracker simplifies group financial management, making it easier for users to track expenses and settle balances effortlessly.
+Spend Share is designed to streamline expense tracking within groups. It enables users to create groups, record transactions, and manage shared costs efficiently. Key features include user authentication for secure access, group creation and management, transaction recording with detailed descriptions, and comprehensive expense reports. With intuitive navigation and robust functionality, the Group Expenses Tracker simplifies group financial management, making it easier for users to track expenses and settle balances effortlessly.
 
 ## Features ✨
 
@@ -29,8 +29,8 @@ To get started with The Money Splitter, follow these steps:
 1. **Clone the repository:**
 
     ```bash
-    git clone https://github.com/yourusername/the-money-splitter.git
-    cd the-money-splitter
+    git clone https://github.com/krishkalaria12/spend-share.git
+    cd spend-share
     ```
 
 2. **Install dependencies:**
