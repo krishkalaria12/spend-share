@@ -1,6 +1,6 @@
-# The Spend Share 💰🤑
+# Spend Share 💰🤑
 
-The Spend Share is designed to streamline expense tracking within groups. It enables users to create groups, record transactions, and manage shared costs efficiently. Key features include user authentication for secure access, group creation and management, transaction recording with detailed descriptions, and comprehensive expense reports. With intuitive navigation and robust functionality, the Group Expenses Tracker simplifies group financial management, making it easier for users to track expenses and settle balances effortlessly.
+Spend Share is designed to streamline expense tracking within groups. It enables users to create groups, record transactions, and manage shared costs efficiently. Key features include user authentication for secure access, group creation and management, transaction recording with detailed descriptions, and comprehensive expense reports. With intuitive navigation and robust functionality, the Group Expenses Tracker simplifies group financial management, making it easier for users to track expenses and settle balances effortlessly.
 
 ## Features ✨
 
