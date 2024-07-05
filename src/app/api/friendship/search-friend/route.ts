@@ -60,10 +60,10 @@ export async function GET(request: Request) {
     if (query) {
       pipeline.push({
         $search: {
-          index: "search-user",
+          index: "search-friends",
           text: {
             query,
-            path: ["username", "fullName"]
+            path: ["username", "fullName", "email"]
           }
         }
       });

@@ -41,7 +41,7 @@ const Footer = () => {
             <a
               target="_blank"
               className="dark:text-sky-500 text-neutral-600 font-medium"
-              href="https://aceternity.com"
+              href="https://spendshare.vercel.app"
             >
               Spend Share
             </a>
@@ -51,7 +51,7 @@ const Footer = () => {
             <a
               className="dark:text-sky-500 font-medium text-neutral-600"
               target="_blank"
-              href="https://twitter.com/mannupaaji"
+              href="https://krishkalaria.vercel.app"
             >
               @krishkalaria
             </a>

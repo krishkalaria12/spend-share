@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     await connect();
 
     try {
-        const { amount, description, title, category } = await request.json();
+        const { amount, description, title, category, selectedMembers } = await request.json();
         const groupId = request.url.split("request-money-from-group/")[1];
 
         const { has, sessionClaims } = auth();
@@ -37,6 +37,10 @@ export async function POST(request: Request) {
             throw createError("Invalid description", 400, false);
         }
 
+        if (!Array.isArray(selectedMembers) || selectedMembers.length < 1) {
+            throw createError("At least one member must be selected", 400, false);
+        }
+
         const group = await Group.findById(groupId);
         if (!group) {
             throw createError("Group does not exist", 404, false);
@@ -46,10 +50,10 @@ export async function POST(request: Request) {
             throw createError("Unauthorized to add member", 401, false);
         }
 
-        const totalMembers = group.members.length;
+        const allSelectedMembers = [...selectedMembers, userId];
+        const totalMembers = allSelectedMembers.length;
         const amountPerMember = amount / totalMembers;
 
-        // Create transaction record including the member IDs
         const transaction = await Transaction.create({
             groupId,
             userId,
@@ -57,16 +61,15 @@ export async function POST(request: Request) {
             description,
             title,
             category,
-            members: group.members
+            members: allSelectedMembers
         });
 
         if (!transaction) {
             throw createError("Failed to create transaction", 500, false);
         }
 
-        // Create owe records for each member (excluding the requester) and update with transaction ID
-        const oweRecords = await Promise.all(group.members.map(async memberId => {
-        if (!memberId.equals(userId)) {
+        const oweRecords = await Promise.all(allSelectedMembers.map(async memberId => {
+            const isPaid = memberId === userId;
             const oweRecord = await Owe.create({
                 groupId,
                 creditor: userId,
@@ -75,24 +78,10 @@ export async function POST(request: Request) {
                 description,
                 title,
                 category,
-                transactionId: transaction._id // Update with transaction ID
+                paid: isPaid,
+                transactionId: transaction._id
             });
             return oweRecord;
-        }
-        else {
-            const oweRecord = await Owe.create({
-                groupId,
-                creditor: userId,
-                debtor: memberId,
-                amount: amountPerMember,
-                description,
-                title,
-                category,
-                paid: true,
-                transactionId: transaction._id // Update with transaction ID
-            });
-            return oweRecord;
-        }
         }));
 
         if (!oweRecords) {
@@ -102,9 +91,9 @@ export async function POST(request: Request) {
         const filteredOweRecords = oweRecords.filter(record => record !== null);
 
         return Response.json(
-        createResponse(
-            "Requested money successfully", 200, true, filteredOweRecords
-        )
+            createResponse(
+                "Requested money successfully", 200, true, filteredOweRecords
+            )
         );
     } catch (error: any) {
         console.log("Error while requesting money from group", error);

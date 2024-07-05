@@ -26,6 +26,11 @@ export const leaveGroup = async (groupId: string) => {
   return response.data;
 };
 
+export const getGroupMembers = async (groupId: string) => {
+  const response = await axios.get(`/api/group/get-group-member/${groupId}`);
+  return response.data.data;
+};
+
 export const deleteGroupById = async (groupId: string) => {
   const response = await axios.delete(`/api/group/delete-group/${groupId}`);
   return response.data;

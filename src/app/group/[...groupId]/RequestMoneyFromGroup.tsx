@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -32,7 +32,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import {
-  Select,
+  Select as SingleSelect,
   SelectContent,
   SelectItem,
   SelectTrigger,
@@ -42,16 +42,22 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { FormError } from '@/components/form-error';
 import { Loader2 } from 'lucide-react';
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { requestMoneyFromGroup } from '@/actions/group.actions';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { requestMoneyFromGroup, getGroupMembers } from '@/actions/group.actions';
 import { useToast } from '@/components/ui/use-toast';
 import { useMediaQuery } from '@mantine/hooks';
+import MultiSelect, { MultiValue } from "react-select";
+import { useAuth } from '@clerk/nextjs';
 
 const formSchema = z.object({
   title: z.string().min(1, { message: "Title is required." }),
   amount: z.string().regex(/^\d+$/, { message: "Amount must be a number." }),
   description: z.string().min(1, { message: "Description is required." }),
   category: z.string().min(1, { message: "Category is required." }),
+  selectedMembers: z.array(z.object({
+    value: z.string(),
+    label: z.string()
+  })).min(1, { message: "At least one member must be selected." }),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -66,6 +72,12 @@ const RequestMoneyFromGroup: React.FC<RequestMoneyFromGroupProps> = ({ error, gr
   const { toast } = useToast();
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [open, setOpen] = useState(false);
+  const { userId } = useAuth();
+
+  const { data: membersData, isLoading: loadingMembers } = useQuery({
+    queryKey: ["groupMembers", groupId],
+    queryFn: () => getGroupMembers(groupId),
+  });
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -74,6 +86,7 @@ const RequestMoneyFromGroup: React.FC<RequestMoneyFromGroupProps> = ({ error, gr
       amount: "0",
       description: "",
       category: "",
+      selectedMembers: [],
     },
   });
 
@@ -87,6 +100,8 @@ const RequestMoneyFromGroup: React.FC<RequestMoneyFromGroupProps> = ({ error, gr
         variant: "success",
         duration: 5000,
       });
+      setOpen(false); 
+      form.reset();
     },
     onError: (error: any) => {
       console.log(error);
@@ -96,6 +111,8 @@ const RequestMoneyFromGroup: React.FC<RequestMoneyFromGroupProps> = ({ error, gr
         variant: "destructive",
         duration: 5000,
       });
+      setOpen(false); 
+      form.reset();
     }
   });
 
@@ -105,10 +122,29 @@ const RequestMoneyFromGroup: React.FC<RequestMoneyFromGroupProps> = ({ error, gr
       amount: parseInt(data.amount, 10),
       description: data.description,
       category: data.category,
+      selectedMembers: data.selectedMembers.map(member => member.value),
     };
     requestMoneyMutation.mutate(formData);
-    setOpen(false); // Close the drawer or dialog after submission
   };
+
+  const handleSelectChange = (selectedOptions: MultiValue<{ value: string; label: string }>) => {
+    if (selectedOptions.some(option => option.value === 'all')) {
+      form.setValue("selectedMembers", membersData.members.filter((member: { clerkId: string; }) => member.clerkId !== userId).map((member: { _id: string; fullName: string; username: string; }) => ({
+        value: member._id,
+        label: `${member.fullName} (${member.username})`
+      })));
+    } else {
+      form.setValue("selectedMembers", selectedOptions.map(option => ({ value: option.value, label: option.label })));
+    }
+  };
+
+  const options = [
+    { value: 'all', label: 'All' },
+    ...(membersData?.members?.filter((member: { clerkId: string; }) => member.clerkId !== userId).map((member: { _id: any; fullName: any; username: any; }) => ({
+      value: member._id,
+      label: `${member.fullName} (${member.username})`
+    })) || [])
+  ];
 
   const renderForm = () => (
     <Form {...form}>
@@ -121,6 +157,25 @@ const RequestMoneyFromGroup: React.FC<RequestMoneyFromGroupProps> = ({ error, gr
               <FormLabel>Title</FormLabel>
               <FormControl>
                 <Input placeholder="Title" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="selectedMembers"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Select Members</FormLabel>
+              <FormControl>
+                <MultiSelect
+                  isMulti
+                  className='text-black'
+                  options={options}
+                  onChange={handleSelectChange}
+                  value={field.value}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -159,7 +214,7 @@ const RequestMoneyFromGroup: React.FC<RequestMoneyFromGroupProps> = ({ error, gr
             <FormItem>
               <FormLabel>Category</FormLabel>
               <FormControl>
-                <Select
+                <SingleSelect
                   onValueChange={(value) => field.onChange(value)}
                   value={field.value}
                 >
@@ -172,7 +227,7 @@ const RequestMoneyFromGroup: React.FC<RequestMoneyFromGroupProps> = ({ error, gr
                     <SelectItem value="Outing">Outing</SelectItem>
                     <SelectItem value="Miscellaneous">Miscellaneous</SelectItem>
                   </SelectContent>
-                </Select>
+                </SingleSelect>
               </FormControl>
               <FormMessage />
             </FormItem>

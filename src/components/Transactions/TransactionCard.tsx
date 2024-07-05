@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import { formatDate } from "@/utils/formatDate";
@@ -19,6 +19,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { payFriend } from "@/actions/owe.actions";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
 
 interface TransactionCardProps {
   transaction: Transaction;
@@ -71,30 +72,33 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction, currentU
     }
   };
 
+  console.log(transaction, currentUserId);
+  
+
   return (
     <>
-      <div className="flex flex-col sm:flex-row sm:justify-between p-4 border rounded-lg dark:border-gray-600 border-gray-200 dark:bg-gray-800 bg-white dark:text-white text-gray-800 mb-4 shadow-lg">
-        <div className="flex items-center flex-col justify-between sm:space-y-2 space-x-2 sm:space-x-0">
-          <div className="flex items-center space-x-4 mb-4 sm:mb-0">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={transaction.creditor.avatar} alt="Avatar" />
-              <AvatarFallback>{transaction.creditor.username.replace(/\s/g, '').substring(0, 2)}</AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="font-semibold text-xl">{transaction.creditor.username.charAt(0).toUpperCase() + transaction.creditor.username.slice(1)}</p>
-              <p className="text-sm text-gray-400">{formatDate(transaction.createdAt)}</p>
-              <div className="flex items-center space-x-2 mt-2">
-                <Badge className="bg-purple-600 text-white text-base cursor-pointer hover:bg-purple-500">
-                  {transaction.title}
-                </Badge>
-                <Badge className="bg-gray-300 text-gray-700 cursor-pointer hover:bg-gray-400">
-                  {transaction.category}
-                </Badge>
+      {transaction.owes.some((owe: { debtor: { clerkId: string | null | undefined; }; }) => owe.debtor.clerkId === currentUserId) && (
+        <div className="flex flex-col sm:flex-row sm:justify-between p-4 border rounded-lg dark:border-gray-600 border-gray-200 dark:bg-gray-800 bg-white dark:text-white text-gray-800 mb-4 shadow-lg">
+          <div className="flex items-center flex-col justify-between sm:space-y-2 space-x-2 sm:space-x-0">
+            <div className="flex items-center space-x-4 mb-4 sm:mb-0">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={transaction.creditor.avatar} alt="Avatar" />
+                <AvatarFallback>{transaction.creditor.username.replace(/\s/g, '').substring(0, 2)}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="font-semibold text-xl">{transaction.creditor.username.charAt(0).toUpperCase() + transaction.creditor.username.slice(1)}</p>
+                <p className="text-sm text-gray-400">{formatDate(transaction.createdAt)}</p>
+                <div className="flex items-center space-x-2 mt-2">
+                  <Badge className="bg-purple-600 text-white text-base cursor-pointer hover:bg-purple-500">
+                    {transaction.title}
+                  </Badge>
+                  <Badge className="bg-gray-300 text-gray-700 cursor-pointer hover:bg-gray-400">
+                    {transaction.category}
+                  </Badge>
+                </div>
               </div>
             </div>
-            
-          </div>
-          <div>
+            <div>
               <Button variant="outline" onClick={() => handleDrawer("Paid Members", paidMembers)}>
                 Paid Members
               </Button>
@@ -102,30 +106,31 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction, currentU
                 Unpaid Members
               </Button>
             </div>
+          </div>
+          <div className="flex sm:flex-col flex-row justify-between items-end space-y-2 sm:space-x-0 space-x-4">
+            <div className="text-right">
+              <p className="text-lg font-semibold">Total Amount</p>
+              <p className="text-xl font-semibold">₹{transaction.totalAmount.toFixed(2)}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-lg font-semibold">Amount to be Paid</p>
+              <p className="text-xl font-semibold">₹{currentUserOwe ? currentUserOwe.amount.toFixed(2) : "0.00"}</p>
+            </div>
+            <div className="flex space-x-2 mt-4">
+              <Button onClick={handlePay} disabled={currentUserOwe?.paid || payFriendMutation.isPending}>
+                {payFriendMutation.isPending ? (
+                  <div className="flex items-center space-x-2 text-gray-500">
+                    <Loader2 className="animate-spin" size={16} />
+                    <span>Paying...</span>
+                  </div>
+                ) : (
+                  currentUserOwe?.paid ? "Paid" : "Pay"
+                )}
+              </Button>
+            </div>
+          </div>
         </div>
-        <div className="flex sm:flex-col flex-row justify-between items-end space-y-2 sm:space-x-0 space-x-4">
-          <div className="text-right">
-            <p className="text-lg font-semibold">Total Amount</p>
-            <p className="text-xl font-semibold">₹{transaction.totalAmount.toFixed(2)}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-lg font-semibold">Amount to be Paid</p>
-            <p className="text-xl font-semibold">₹{currentUserOwe ? currentUserOwe.amount.toFixed(2) : "0.00"}</p>
-          </div>
-          <div className="flex space-x-2 mt-4">
-            <Button onClick={handlePay} disabled={currentUserOwe?.paid || payFriendMutation.isPending}>
-              {payFriendMutation.isPending ? (
-                <div className="flex items-center space-x-2 text-gray-500">
-                  <Loader2 className="animate-spin" size={16} />
-                  <span>Paying...</span>
-                </div>
-              ) : (
-                currentUserOwe?.paid ? "Paid" : "Pay"
-              )}
-            </Button>
-          </div>
-        </div>
-      </div>
+      )}
 
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
         <DrawerContent>
