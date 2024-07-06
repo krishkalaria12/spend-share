@@ -15,6 +15,11 @@ export const getExpenseComparison = async () => {
   return response.data.data;
 };
 
+export const visualizeExpense = async () => {
+  const response = await axios.get('/api/expense/visualize-expenses');
+  return response.data.data;
+};
+
 export const addExpense = async (expenseData: any) => {
   const response = await axios.post('/api/expense/add-expense', expenseData);
   return response.data;

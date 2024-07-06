@@ -9,6 +9,7 @@ import { ExpenseCategory } from '@/types';
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
 import { DeleteAllExpense } from "@/app/expense/DeleteAllExpense";
+import { Link } from "next-view-transitions";
 
 interface ListExpenseProps {
   expenses: ExpenseCategory[];
@@ -75,8 +76,13 @@ export const ListExpense: React.FC<ListExpenseProps> = ({ expenses }) => {
                 </TabsTrigger>
               ))}
             </TabsList>
-            <div>
+            <div className="flex space-x-3 items-center">
               <DeleteAllExpense />
+              <Link href={"/expense/visualize"}>
+                <Button variant={"secondary"}>
+                  Visualize Expenses
+                </Button>
+              </Link>
             </div>
           </div>
           <TabsContent value={selectedCategory}>

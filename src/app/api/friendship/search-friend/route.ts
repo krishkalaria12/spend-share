@@ -57,17 +57,15 @@ export async function GET(request: Request) {
 
     const pipeline: any[] = [];
 
-    if (query) {
-      pipeline.push({
-        $search: {
-          index: "search-friends",
-          text: {
-            query,
-            path: ["username", "fullName", "email"]
-          }
+    pipeline.push({
+      $search: {
+        index: "search-friends",
+        text: {
+          query: query,
+          path: ["username", "fullName", "email"]
         }
-      });
-    }
+      }
+    });
 
     pipeline.push({
       $match: {
