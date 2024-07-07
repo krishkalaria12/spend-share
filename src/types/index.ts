@@ -19,8 +19,8 @@ export interface ExpenseComparison {
     weekExpense: number;
     monthExpense: number;
     percentageComparison: {
-        week: number;
-        month: number;
+        week: string;
+        month: string;
     };
     overallExpenseAmount: number;
 }

@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const query = url.searchParams.get("query");
-
+    
     const { has, sessionClaims } = auth();
     const userId = (sessionClaims?.mongoId as { mongoId: string })?.mongoId;
 

@@ -3,6 +3,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ExpenseComparison as ExpenseComparisonType } from "@/types";
 
 const ExpenseComparison: React.FC<{ data: ExpenseComparisonType }> = ({ data }) => {
+  const weekPercentage = parseFloat(data.percentageComparison.week);
+  const monthPercentage = parseFloat(data.percentageComparison.month);
+
+  const valueForWeek = weekPercentage > 0 ? weekPercentage : 0;
+  const valueForMonth = monthPercentage > 0 ? monthPercentage : 0;
+
   return (
     <>
       <Card x-chunk="dashboard-05-chunk-1">
@@ -12,11 +18,11 @@ const ExpenseComparison: React.FC<{ data: ExpenseComparisonType }> = ({ data }) 
         </CardHeader>
         <CardContent>
           <div className="text-xs text-muted-foreground">
-            +{data.percentageComparison.week.toFixed(2)}% from last week
+            {data.percentageComparison.week} from last week
           </div>
         </CardContent>
         <CardFooter>
-          <Progress value={data.percentageComparison.week} aria-label={`${data.percentageComparison.week}% increase`} />
+          <Progress value={valueForWeek} aria-label={`${data.percentageComparison.week}% increase`} />
         </CardFooter>
       </Card>
       <Card x-chunk="dashboard-05-chunk-2">
@@ -26,11 +32,11 @@ const ExpenseComparison: React.FC<{ data: ExpenseComparisonType }> = ({ data }) 
         </CardHeader>
         <CardContent>
           <div className="text-xs text-muted-foreground">
-            +{data.percentageComparison.month}% from last month
+            {data.percentageComparison.month} from last month
           </div>
         </CardContent>
         <CardFooter>
-          <Progress value={data.percentageComparison.month} aria-label={`${data.percentageComparison.month}% increase`} />
+          <Progress value={valueForMonth} aria-label={`${data.percentageComparison.month}% increase`} />
         </CardFooter>
       </Card>
       <Card x-chunk="dashboard-05-chunk-3">
@@ -40,7 +46,7 @@ const ExpenseComparison: React.FC<{ data: ExpenseComparisonType }> = ({ data }) 
         </CardHeader>
         <CardContent>
           <p className="text-base text-gray-500">
-          &quot;Frugality is not about depriving yourself of things you want, but about being mindful of the things you need&quot;
+            &#34;Frugality is not about depriving yourself of things you want, but about being mindful of the things you need&#34;
           </p>
         </CardContent>
       </Card>

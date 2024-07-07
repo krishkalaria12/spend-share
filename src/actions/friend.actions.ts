@@ -7,7 +7,7 @@ export const getAllFriends = async (): Promise<{ friends: Friend[], pendingReque
 };
 
 export const searchFriend = async (query: string): Promise<Friend[]> => {
-    const response = await axios.get(`/api/friendship/search-friend?q=${query}`);
+    const response = await axios.get(`/api/friendship/search-friend?query=${query}`);
     return response.data.data;
 };
 

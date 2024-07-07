@@ -75,6 +75,7 @@ export const AddExpense: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });
       queryClient.invalidateQueries({ queryKey: ['expense-comparison'] });
+      queryClient.invalidateQueries({ queryKey: ['expenseData'] });
       toast({
         title: "Expense added successfully",
         description: "You've successfully added an expense",
