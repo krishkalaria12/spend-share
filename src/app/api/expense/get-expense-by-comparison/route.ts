@@ -56,16 +56,6 @@ export async function GET(request: Request){
         const endOfPreviousMonth = new Date(today.getFullYear(), today.getMonth(), 0);
         endOfPreviousMonth.setHours(23, 59, 59, 999);
 
-        // Logging the calculated dates for debugging
-        console.log("Start of Week:", startOfWeek);
-        console.log("End of Week:", endOfWeek);
-        console.log("Start of Past Week:", startOfPastWeek);
-        console.log("End of Past Week:", endOfPastWeek);
-        console.log("Start of Month:", startOfMonth);
-        console.log("End of Month:", endOfMonth);
-        console.log("Start of Previous Month:", startOfPreviousMonth);
-        console.log("End of Previous Month:", endOfPreviousMonth);
-
         // Calculate expenses for the present week
         const weekExpense = await calculateExpense(userId, startOfWeek, endOfWeek);
 
@@ -137,7 +127,6 @@ const calculateOverallExpense = async (userId: string) => {
 };
 
 const calculateExpense = async (userId: string, startDate: Date, endDate: Date) => {
-  console.log(`Calculating expense from ${startDate} to ${endDate}`);
   const expenseAggregate = await Expense.aggregate([
     {
       $match: {
@@ -159,7 +148,6 @@ const calculateExpense = async (userId: string, startDate: Date, endDate: Date) 
     }
   ]);
 
-  console.log(`Expense from ${startDate} to ${endDate}:`, expenseAggregate);
   return expenseAggregate.length > 0 ? expenseAggregate[0].totalExpense : 0;
 };
 

@@ -130,7 +130,7 @@ const AskFriendPage: React.FC = () => {
             <p className='text-sm my-3 text-gray-400 font-normal font-mono'>
               You are indebted to the user and must settle your debt by making a payment to them.
             </p>
-            <Tabs defaultValue="pendingOwes" className="w-[90%]">
+            <Tabs defaultValue="pendingOwes" className="">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="pendingOwes">Pending</TabsTrigger>
                 <TabsTrigger value="confirmedOwes">I Paid</TabsTrigger>

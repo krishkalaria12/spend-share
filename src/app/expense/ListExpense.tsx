@@ -68,7 +68,7 @@ export const ListExpense: React.FC<ListExpenseProps> = ({ expenses }) => {
         <p className="text-center text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">No expenses Found! Add your expense now to get started.</p>
       ) : (
         <Tabs value={selectedCategory}>
-          <div className="flex items-center justify-between">
+          <div className="flex sm:flex-row flex-col-reverse sm:gap-y-0 gap-y-3 items-start justify-between">
             <TabsList>
               {expenses?.map((category) => (
                 <TabsTrigger key={category.category} value={category.category} onClick={() => handleCategoryChange(category.category)}>
