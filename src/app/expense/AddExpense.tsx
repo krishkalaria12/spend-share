@@ -82,6 +82,7 @@ export const AddExpense: React.FC = () => {
         variant: "success",
         duration: 5000,
       });
+      form.reset();
       setOpen(false); // Close the drawer or dialog after submission
     },
     onError: (error: any) => {
